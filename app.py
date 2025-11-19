@@ -19,6 +19,8 @@ from flask import (
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from pymongo import MongoClient, errors
+from bson import ObjectId
+from bson.errors import InvalidId
 
 from data import (
     current_year,
@@ -30,6 +32,14 @@ from data import (
     schedule,
     storyline,
 )
+
+ADDITIONAL_GALLERY_FILES = [
+    ("maxresdefault.jpg", "Lakshadeepotsava Celebration"),
+    ("Chariot-udupi-krishna-matha.jpg", "Temple Chariot at Udupi Krishna Matha"),
+    ("FpkEW5iXEAEwWC2.jpg", "Procession of Devotees"),
+    ("dfdce484948261df4827ab9218a87260.jpg", "Alankara of Sri Krishna"),
+    ("WhatsApp Image 2025-11-19 at 11.53.41_f9b61d6a.jpg", "Laksha Deepotsava Sevaks"),
+]
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-in-production")
@@ -110,7 +120,7 @@ def fetch_registrations():
         return []
 
     registrations = []
-    for entry in db.registrations.find().sort("created_at", -1):
+    for entry in db.registrations.find().sort("created_at", 1):
         entry["_id"] = str(entry["_id"])
         registrations.append(entry)
     return registrations
@@ -185,6 +195,18 @@ def get_gallery_images():
     return gallery_images if gallery_images else gallery_slides
 
 
+def get_additional_gallery_images():
+    images = []
+    for filename, caption in ADDITIONAL_GALLERY_FILES:
+        images.append(
+            {
+                "src": url_for("static", filename=filename),
+                "caption": caption,
+            }
+        )
+    return images
+
+
 @app.context_processor
 def inject_layout_tokens():
     return {
@@ -215,7 +237,7 @@ def home():
 
 @app.route("/gallery")
 def gallery():
-    gallery_images = get_gallery_images()
+    gallery_images = get_gallery_images() + get_additional_gallery_images()
     return render_template("gallery.html", hero=hero_story, gallery=gallery_images)
 
 
@@ -373,6 +395,34 @@ def admin_update_options():
         flash("Options updated successfully.", "success")
     else:
         db_unavailable_message()
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/registrations/<reg_id>/delete", methods=["POST"])
+@admin_required
+def admin_delete_registration(reg_id):
+    db = get_db()
+    if db is None:
+        db_unavailable_message()
+        return redirect(url_for("admin_dashboard"))
+
+    try:
+        object_id = ObjectId(reg_id)
+    except InvalidId:
+        flash("Invalid registration identifier.", "danger")
+        return redirect(url_for("admin_dashboard"))
+
+    try:
+        result = db.registrations.delete_one({"_id": object_id})
+    except errors.PyMongoError as exc:
+        app.logger.error("Failed to delete registration: %s", exc)
+        flash("Could not delete the registration. Please try again.", "danger")
+        return redirect(url_for("admin_dashboard"))
+
+    if result.deleted_count:
+        flash("Registration removed permanently.", "success")
+    else:
+        flash("Registration was not found or already removed.", "warning")
     return redirect(url_for("admin_dashboard"))
 
 
