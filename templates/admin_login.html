@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page admin-auth-page">
+  <section class="auth-card glass-card" data-scroll>
+    <header>
+      <p class="eyebrow">Secure Console</p>
+      <h1>Administrator Sign-in</h1>
+      <p>Use the shared credentials to manage registrations, exports, and form options.</p>
+    </header>
+    <form method="post" class="auth-form" autocomplete="off">
+      <label>
+        Username
+        <input
+          type="text"
+          name="username"
+          placeholder="bbhcadmin"
+          required
+        />
+      </label>
+      <label>
+        Password
+        <input
+          type="password"
+          name="password"
+          placeholder="••••••••"
+          required
+        />
+      </label>
+      <button type="submit" class="btn primary full-width">Access Admin Panel</button>
+    </form>
+    <p class="auth-note">
+      Having trouble? Contact the programme coordinator to reset the shared password securely.
+    </p>
+  </section>
+</main>
+{% endblock %}
+

@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page about-page">
+  <section class="about-overview" data-scroll>
+    <div class="about-overview-content">
+      <p class="eyebrow">About the Temple</p>
+      <h1>Udupi Krishna Temple Heritage</h1>
+      <p>
+        The Udupi Krishna Temple, lovingly called Shri Krishna Matha, is the beating heart
+        of Vaishnavite devotion in South India. Founded in the 13th century by
+        Jagadguru Sri Madhvacharya, it is dedicated to Lord Krishna in his child form.
+      </p>
+      <p>
+        The sanctum’s famed Kanakana Kindi — a silver-plated lattice window — was created
+        after saint Kanakadasa was denied entry due to caste barriers. Lord Krishna is said
+        to have turned westward so Kanakadasa could receive darshan through this window,
+        and to this day every devotee first prays through that portal.
+      </p>
+    </div>
+    <div class="about-overview-media">
+      <img
+        src="{{ url_for('static', filename='images/Udupi-Krishna-Temple-Copy-1.jpg') }}"
+        alt="Udupi Shri Krishna Matha entrance with temple chariots"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
+      <a
+        class="krishnamatha-badge"
+        href="https://krishnamatha.org/"
+        target="_blank"
+        rel="noopener"
+        aria-label="Open krishnamatha.org"
+      >
+        <img
+          src="{{ url_for('static', filename='images/png-clipart-happy-krishna-janmashtami-others-desktop-wallpaper-religion.png') }}"
+          alt="Sri Krishna Matha emblem"
+        />
+        <span>Visit krishnamatha.org</span>
+      </a>
+    </div>
+    <div class="about-overview-detail">
+      <p>
+        Eight monasteries, the Ashta Mathas, still manage the temple in a biennial rotation
+        called Paryaya. Their seers oversee the daily Maha Prasada, feed thousands, and
+        preserve the Dravidian–Hoysala architectural blend that defines the Matha precincts.
+      </p>
+      <div class="about-links">
+        <a
+          class="btn primary"
+          href="https://en.wikipedia.org/wiki/Udupi_Sri_Krishna_Matha"
+          target="_blank"
+          rel="noopener"
+        >
+          History – Udupi Sri Krishna Matha
+        </a>
+        <a
+          class="btn external"
+          href="https://krishnamatha.org/"
+          target="_blank"
+          rel="noopener"
+        >
+          Explore krishnamatha.org
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-hero" data-scroll>
+    <p class="eyebrow">About the Concept</p>
+    <h1>"Laksha Kantha Geetha Parayana" Narrative</h1>
+    <p>
+      Inspired by the Prime Minister’s announced visit, this microsite captures
+      the devotional momentum across Udupi while showcasing the timeless aura of
+      Sri Krishna Math.
+    </p>
+  </section>
+
+  <section class="about-content" data-scroll>
+    <article>
+      <h2>Prime Minister’s Visit</h2>
+      <p>
+        The Prime Minister returns to the Math after sixteen years to lead the
+        concluding chant of the Bhagavad Gita, inaugurate the Kanaka Kavacha, and
+        spotlight the Math’s Vaishnavite legacy for the nation.
+      </p>
+    </article>
+   
+    <article>
+      <h2>Festival Context</h2>
+      <p>
+        The Laksha Kantha Geetha Parayana is part of the Sri Sugunendra Theertha
+        Swamiji’s Vishwagita Paryaya, comprising Sant Sangama, Bhajanotsava,
+        Sant Sandesha, Sant Sanmana, and immersive Gita workshops.
+      </p>
+    </article>
+  </section>
+
+  <section class="about-heritage" data-scroll>
+    <header>
+      <p class="eyebrow">Sacred Situation</p>
+      <h2>Where History Meets Living Tradition</h2>
+      <p>
+        Every ritual during Laksha Kantha Geetha Parayana happens inside the sanctum of Sri Krishna Math,
+        where Sri Madhwacharya himself installed the Bala Krishna idol he discovered at Malpe seashore.
+      </p>
+    </header>
+    <div class="heritage-grid">
+      <article>
+        <h3>Madhwacharya’s Discovery</h3>
+        <p>
+          The Acharya lifted the mud-encrusted idol from a block of gopichandana clay,
+          carried it to Udupi, and enshrined it facing west so that devotees could
+          have darshan through the famous Kanakana Kindi.
+        </p>
+      </article>
+      <article>
+        <h3>Seers &amp; Sevaks</h3>
+        <p>
+          The eight Maths take turns (Paryaya) to perform seva. During this
+          Laksha Geetha observance, Sri Sugunendra Theertha Swamiji and Sri
+          Vidhyadheesha Theertha Swamiji personally orchestrate the parayana.
+        </p>
+      </article>
+      <article>
+        <h3>Kanaka Mantapa</h3>
+        <p>
+          The new golden mantapa and Kanaka Kavacha provide a resplendent backdrop
+          for the Geetha chanting, with thousands queueing along the Car Street
+          and Madhwa Sarovara to witness the alankaras.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="about-story" data-scroll>
+    <header>
+      <p class="eyebrow">Storyline Highlights</p>
+      <h2>Key Moments</h2>
+    </header>
+    <ul>
+      {% for point in storyline %}
+      <li>{{ point }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="about-dignitaries" data-scroll>
+    <header>
+      <p class="eyebrow">Leadership</p>
+      <h2>Guardians of Tradition</h2>
+    </header>
+    <div class="dignitary-grid">
+      {% for leader in dignitaries %}
+      <article>
+        <h3>{{ leader.name }}</h3>
+        <p class="role">{{ leader.role }}</p>
+        <p>{{ leader.note }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="about-gallery" data-scroll>
+    <header>
+      <p class="eyebrow">Visual Darshana</p>
+      
+      <p>
+        Glimpses from the sanctum, the alankaras, and the Sarovara that hosts the thousands arriving for
+        Laksha Kantha Geetha Parayana.
+      </p>
+    </header>
+    <div class="about-gallery-grid">
+      
+      <figure>
+        <img src="{{ url_for('static', filename='images/udupi-krishna-idol.jpg') }}" alt="Udupi Sri Krishna idol close-up" />
+      </figure>
+      
+      <figure>
+        <img src="{{ url_for('static', filename='images/udupi-krishna-temple.jpg') }}" alt="Udupi Krishna temple and Madhwa Sarovara" />
+      </figure>
+      <figure>
+        <img src="{{ url_for('static', filename='images/krishna-alankara-1.webp') }}" alt="Priest performing aarati" />
+      </figure>
+      <figure>
+        <img src="{{ url_for('static', filename='images/krishna-alankara-3.webp') }}" alt="Udupi Krishna with nagabharana" />
+      </figure>
+    </div>
+  </section>
+</main>
+{% endblock %}
+

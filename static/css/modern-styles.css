@@ -1,0 +1,392 @@
+/* Modern Glassmorphism & Krishna Theme Styles */
+
+:root {
+  /* Krishna Colors - Blue & Gold */
+  --krishna-blue: #1a237e;
+  --krishna-blue-light: #283593;
+  --krishna-blue-dark: #0d47a1;
+  --krishna-gold: #ffd700;
+  --krishna-gold-light: #ffed4e;
+  --krishna-gold-dark: #ffb300;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  
+  /* Gradients */
+  --gradient-blue: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+  --gradient-gold: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffb300 100%);
+  --gradient-krishna: linear-gradient(135deg, #1a237e 0%, #283593 25%, #ffd700 75%, #ffb300 100%);
+  
+  /* Text */
+  --text-primary: #f4f5ff;
+  --text-secondary: #9ca4c2;
+  --kannada-gold: #ffd700;
+}
+
+/* Kannada Text Highlighting */
+.kannada-highlight {
+  color: var(--krishna-gold);
+  font-weight: 600;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.geetotsava-title.kannada-highlight {
+  display: inline-block;
+  margin-bottom: 0;
+}
+
+.kannada-text {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.english-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.85em;
+  font-weight: 400;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.english-text {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+/* Glassmorphism Card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--glass-shadow);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-gold);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(255, 215, 0, 0.3);
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.glass-card:hover::before {
+  opacity: 1;
+}
+
+/* Event Cards with Images */
+.event-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.event-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+.event-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.event-card:hover .event-image {
+  transform: scale(1.1);
+}
+
+.event-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(26, 35, 126, 0.7) 100%);
+  opacity: 0.6;
+  transition: opacity 0.4s ease;
+}
+
+.event-card:hover .event-overlay {
+  opacity: 0.8;
+}
+
+.event-content {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.kannada-chip {
+  background: var(--gradient-gold);
+  color: var(--krishna-blue-dark);
+  font-weight: 600;
+}
+
+.english-chip {
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+}
+
+.event-summary {
+  flex: 1;
+  margin: 1rem 0;
+  line-height: 1.7;
+}
+
+/* Hero Section Enhancements */
+.hero h1 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hero-lead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Scroll Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+[data-scroll] {
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-scroll].in-view {
+  opacity: 1;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Enhanced Buttons */
+.btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn.primary {
+  background: transparent;
+  border: 1px solid rgba(255, 215, 0, 0.8);
+  color: var(--krishna-gold);
+  box-shadow: none;
+}
+
+.btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--krishna-gold);
+}
+
+/* Metric Cards */
+.metric-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 2rem;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.metric-card:hover::after {
+  opacity: 1;
+}
+
+.metric-card h3 {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2.5rem;
+}
+
+/* Timeline Cards */
+.timeline-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 2rem;
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--gradient-gold);
+  border-radius: 0 4px 4px 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.timeline-card:hover {
+  transform: translateX(8px);
+  box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
+}
+
+.timeline-card:hover::before {
+  opacity: 1;
+}
+
+/* Enhanced Background Gradient */
+.cosmic-gradient {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(26, 35, 126, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(40, 53, 147, 0.3) 0%, transparent 70%);
+}
+
+/* Floating Card Enhancement */
+.floating-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.floating-card p {
+  color: var(--krishna-gold);
+  font-weight: 600;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .event-image-wrapper {
+    height: 200px;
+  }
+  
+  .event-content {
+    padding: 1rem;
+  }
+  
+  .kannada-highlight {
+    font-size: 1.1em;
+  }
+  
+  .english-subtitle {
+    font-size: 0.8em;
+  }
+}
+

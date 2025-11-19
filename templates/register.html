@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page registration-page">
+  <section class="registration-hero" data-scroll>
+    <div class="registration-copy glass-card">
+      <p class="eyebrow">Laksha Kantha Geetha Parayana · 2025</p>
+      <h1>
+        <span class="kannada-highlight">ಭಕ್ತರ ನೋಂದಣಿ</span>
+        <span class="english-subtitle">Devotee Registration Portal</span>
+      </h1>
+      <p>
+        Reserve your seat for the month-long Gita chanting offering at Sri Krishna
+        Matha. Submit your details and our coordinators will keep you informed
+        about rehearsal slots, travel advisories, and sacred guidelines.
+      </p>
+      <ul class="registration-highlights">
+        <li>Glassmorphic records securely stored on MongoDB</li>
+        <li>Admin-reviewed college & course selections</li>
+        <li>Instant confirmation with WhatsApp follow-up</li>
+      </ul>
+      <div class="registration-meta">
+        <div>
+          <p class="eyebrow">Program Window</p>
+          <strong>Nov 8 – Dec 7, 2025</strong>
+        </div>
+        <div>
+          <p class="eyebrow">Location</p>
+          <strong>Udupi Sri Krishna Matha</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="registration-form-section" data-scroll>
+    <div class="glass-card registration-form-card">
+      <header>
+        <p class="eyebrow">Step into the chorus</p>
+        <h2>Complete your registration</h2>
+        <p>Fields marked * are mandatory</p>
+      </header>
+      <form method="post" class="registration-form" autocomplete="off">
+        <div class="form-grid">
+          <label>
+            Full Name*
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your full name"
+              value="{{ request.form.get('name', '') }}"
+              required
+            />
+          </label>
+          <label>
+            College*
+            <select name="college" required>
+              <option value="">Select your college</option>
+              {% for college in colleges %}
+              <option
+                value="{{ college }}"
+                {% if request.form.get('college') == college %}selected{% endif %}
+              >
+                {{ college }}
+              </option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>
+            Course*
+            <select name="course" required>
+              <option value="">Select your course</option>
+              {% for course in courses %}
+              <option
+                value="{{ course }}"
+                {% if request.form.get('course') == course %}selected{% endif %}
+              >
+                {{ course }}
+              </option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>
+            Phone Number*
+            <input
+              type="tel"
+              name="phone"
+              placeholder="+91 9XXXXXXXXX"
+              value="{{ request.form.get('phone', '') }}"
+              pattern="[0-9+\-\s]{8,}"
+              required
+            />
+          </label>
+          <label>
+            Email*
+            <input
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              value="{{ request.form.get('email', '') }}"
+              required
+            />
+          </label>
+        </div>
+        <p class="privacy-note">
+          By registering you consent to communications from Dr. B. B. Hegde First
+          Grade College (organising partner) and Sri Krishna Matha coordinators.
+        </p>
+        <button type="submit" class="btn primary full-width">
+          Submit Registration
+        </button>
+      </form>
+    </div>
+  </section>
+
+  {% if registration_success %}
+  <div id="registrationSuccessModal" class="modal-overlay">
+    <div class="success-modal glass-card">
+      <h3>Registration Successful</h3>
+      <p>Registered successfully.</p>
+    </div>
+  </div>
+  {% endif %}
+</main>
+
+{% if registration_success %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("registrationSuccessModal");
+    const hideModal = () => {
+      modal?.classList.add("hidden");
+      modal?.addEventListener("transitionend", () => modal.remove(), { once: true });
+    };
+    setTimeout(hideModal, 2000);
+    modal?.addEventListener("click", event => {
+      if (event.target === modal) hideModal();
+    });
+  });
+</script>
+{% endif %}
+{% endblock %}
+

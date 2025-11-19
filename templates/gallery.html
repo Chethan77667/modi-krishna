@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page gallery-page">
+  <section class="page-hero" data-scroll>
+    <p class="eyebrow">Visual Gallery</p>
+    <h1>Gallery</h1>
+    <p>
+      Explore our collection of images showcasing the college, events, and memorable moments.
+    </p>
+  </section>
+
+  <section class="gallery-grid">
+    {% for item in gallery %}
+    <figure class="gallery-item" aria-label="{{ item.caption or 'Gallery image' }}">
+      <button
+        type="button"
+        class="gallery-fullscreen-trigger"
+        data-src="{{ item.src }}"
+        data-alt="{{ item.caption or 'Gallery image' }}"
+      >
+        <div class="image-wrapper" style="background-color:#122153">
+          <img
+            src="{{ item.src }}"
+            alt="{{ item.caption or 'Gallery image' }}"
+            decoding="async"
+            sizes="(max-width: 640px) 90vw, (max-width: 1200px) 45vw, 30vw"
+            fetchpriority="{{ 'high' if loop.first else 'auto' }}"
+          />
+        </div>
+      </button>
+    </figure>
+    {% endfor %}
+  </section>
+
+  <div
+    class="fullscreen-modal"
+    id="galleryLightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Expanded gallery image"
+    hidden
+  >
+    <button class="modal-close" aria-label="Close fullscreen view">&times;</button>
+    <img src="" alt="" id="lightboxImage" />
+  </div>
+</main>
+{% endblock %}
+

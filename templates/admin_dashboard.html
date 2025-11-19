@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page admin-page">
+  <section class="admin-hero glass-card" data-scroll>
+    <div>
+      <p class="eyebrow">Laksha Kantha Geetha Parayana</p>
+      <h1>Admin Control Room</h1>
+      <p>
+        Monitor registrations, refresh the college/course directory, and export official
+        attendance ledgers. All submissions are written to MongoDB for reliability.
+      </p>
+    </div>
+    <div class="admin-status">
+      <div>
+        <span>Status</span>
+        <strong class="{{ 'status-online' if db_connected else 'status-offline' }}">
+          {{ 'MongoDB Connected' if db_connected else 'Database Offline' }}
+        </strong>
+      </div>
+      <div>
+        <span>Total Registrations</span>
+        <strong>{{ total_registrations }}</strong>
+      </div>
+      <div>
+        <a href="{{ url_for('admin_logout') }}" class="btn link">Sign out</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-actions" data-scroll>
+    <article class="glass-card">
+      <header>
+        <h2>Exports</h2>
+        <p>Download structured reports for sharing with the organising committee.</p>
+      </header>
+      <div class="button-row">
+        <a href="{{ url_for('export_excel') }}" class="btn external">Download Excel</a>
+        <a href="{{ url_for('export_pdf') }}" class="btn secondary">Download PDF</a>
+      </div>
+    </article>
+
+    <article class="glass-card">
+      <header>
+        <h2>Quick Stats</h2>
+      </header>
+      <div class="quick-stats">
+        <div>
+          <span>Unique Colleges</span>
+          <strong>{{ colleges|length }}</strong>
+        </div>
+        <div>
+          <span>Supported Courses</span>
+          <strong>{{ courses|length }}</strong>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="admin-options-grid" data-scroll>
+    <article class="glass-card option-card">
+      <header>
+        <h3>College Directory</h3>
+        <p>Update the dropdown options shown on the registration form.</p>
+      </header>
+      <ul class="option-list">
+        {% for college in colleges %}
+        <li>
+          <span>{{ college }}</span>
+          <form method="post" action="{{ url_for('admin_update_options') }}">
+            <input type="hidden" name="option_type" value="college" />
+            <input type="hidden" name="action" value="remove" />
+            <input type="hidden" name="value" value="{{ college }}" />
+            <button type="submit" class="pill-action" aria-label="Remove {{ college }}">×</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      <form method="post" action="{{ url_for('admin_update_options') }}" class="inline-form">
+        <input type="hidden" name="option_type" value="college" />
+        <input
+          type="text"
+          name="value"
+          placeholder="Add new college"
+          required
+        />
+        <button type="submit" class="btn primary">Add</button>
+      </form>
+    </article>
+
+    <article class="glass-card option-card">
+      <header>
+        <h3>Course Directory</h3>
+        <p>Keep the course catalog current for cross-campus participation.</p>
+      </header>
+      <ul class="option-list">
+        {% for course in courses %}
+        <li>
+          <span>{{ course }}</span>
+          <form method="post" action="{{ url_for('admin_update_options') }}">
+            <input type="hidden" name="option_type" value="course" />
+            <input type="hidden" name="action" value="remove" />
+            <input type="hidden" name="value" value="{{ course }}" />
+            <button type="submit" class="pill-action" aria-label="Remove {{ course }}">×</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      <form method="post" action="{{ url_for('admin_update_options') }}" class="inline-form">
+        <input type="hidden" name="option_type" value="course" />
+        <input
+          type="text"
+          name="value"
+          placeholder="Add new course"
+          required
+        />
+        <button type="submit" class="btn primary">Add</button>
+      </form>
+    </article>
+  </section>
+
+  <section class="admin-table-section" data-scroll>
+    <header>
+      <h2>Latest Registrations</h2>
+      <p>Most recent entries appear on top. Use the exports for the full data set.</p>
+    </header>
+    <p class="table-scroll-hint">Swipe or drag horizontally to explore every column</p>
+    <div class="table-wrapper glass-card">
+      {% if registrations %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>College</th>
+            <th>Course</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Registered</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reg in registrations %}
+          <tr>
+            <td data-label="ID">{{ loop.index }}</td>
+            <td data-label="Name">{{ reg.name }}</td>
+            <td data-label="College">{{ reg.college }}</td>
+            <td data-label="Course">{{ reg.course }}</td>
+            <td data-label="Phone">{{ reg.phone }}</td>
+            <td data-label="Email">{{ reg.email }}</td>
+            <td data-label="Registered">
+              {% if reg.created_at %}
+                {{ reg.created_at.strftime('%d %b %Y · %I:%M %p') }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="empty-state">No registrations captured yet. Share the public link to begin onboarding.</p>
+      {% endif %}
+    </div>
+  </section>
+</main>
+{% endblock %}
+
