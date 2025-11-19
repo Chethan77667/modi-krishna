@@ -143,8 +143,44 @@ def format_timestamp(value):
 
 def get_gallery_images():
     """Get all images from static/images folder."""
-    # Gallery images removed - returning empty list
-    return []
+    image_dir = os.path.join(app.static_folder, "images")
+    gallery_images = []
+
+    if os.path.exists(image_dir):
+        image_extensions = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"}
+
+        for filename in os.listdir(image_dir):
+            lower_name = filename.lower()
+            if (
+                "logo" in lower_name
+                or "hero" in lower_name
+                or "pm modi-30oct25" in lower_name
+                or "png-clipart-happy-krishna-janmashtami" in lower_name
+                or "krishna-alankara-3.webp" in lower_name
+                or "main_image.jpg" in lower_name
+                or "udupi-krishna-idol.jpg" in lower_name
+                or "udupi-krishna.webp" in lower_name
+                or "yogi-sants-gathering.jpg" in lower_name
+            ):
+                continue
+
+            _, ext = os.path.splitext(filename.lower())
+            if ext in image_extensions:
+                caption = (
+                    filename.replace("-", " ")
+                    .replace("_", " ")
+                    .replace(ext, "")
+                )
+                caption = " ".join(word.capitalize() for word in caption.split())
+
+                gallery_images.append(
+                    {
+                        "src": url_for("static", filename=f"images/{filename}"),
+                        "caption": caption,
+                    }
+                )
+
+    return gallery_images if gallery_images else gallery_slides
 
 
 @app.context_processor

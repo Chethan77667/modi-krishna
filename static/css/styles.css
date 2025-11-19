@@ -681,6 +681,8 @@ a {
 
   .gallery-grid figure {
     aspect-ratio: 359/239 !important; /* frame size 359x239 */
+    width: min(100%, 359px);
+    max-width: 359px;
   }
 
   .gallery-grid figure figcaption {
@@ -1149,8 +1151,10 @@ a {
   animation: fadeInUp 0.6s ease forwards;
   opacity: 0;
   aspect-ratio: 359/239 !important; /* frame size 359x239 */
-  width: 100%;
+  width: min(100%, 359px);
+  max-width: 359px;
   height: auto;
+  justify-self: center;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -1354,6 +1358,8 @@ body.modal-open {
 
   .gallery-grid figure {
     aspect-ratio: 359/239 !important; /* frame size 359x239 */
+    width: min(100%, 359px);
+    max-width: 359px;
   }
 
   .about-content,
@@ -1387,8 +1393,9 @@ body.modal-open {
   }
 
   .gallery-grid figure {
-    aspect-ratio: 3/4 !important; /* same frame size for all images */
-    width: 100%;
+    aspect-ratio: 359/239 !important; /* frame size 359x239 */
+    width: min(100%, 359px);
+    max-width: 359px;
     height: auto;
   }
 }
