@@ -104,22 +104,32 @@ gallery_slides = [
     {
         "src": "/static/images/hero.jpg",
         "caption": "Devotees gather at Sri Krishna Math for the evening alankara.",
+        "title": "Evening Alankara Darshan",
+        "subtitle": "Sri Krishna Math · Sacred Glow",
     },
     {
         "src": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
         "caption": "Golden rays illuminating the sanctum at dawn.",
+        "title": "Suvarna Teertha Sunrise",
+        "subtitle": "Udupi · Dawn Arati",
     },
     {
         "src": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
         "caption": "Bhajanotsava troupe preparing their mridangam and tambura.",
+        "title": "Bhajan Mandali Prelude",
+        "subtitle": "Math Courtyard · Bhajanotsava",
     },
     {
         "src": "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=1200&q=80",
         "caption": "Devotees reciting Gita verses under the open sky.",
+        "title": "Gita Parayana Chorus",
+        "subtitle": "Bailkere Grounds · Collective Chant",
     },
     {
         "src": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
         "caption": "Kanakana Kindi adorned with floral mandalas.",
+        "title": "Kanakana Kindi Seva",
+        "subtitle": "Sri Krishna Math · Floral Offerings",
     },
 ]
 

@@ -11,22 +11,33 @@
   </section>
 
   <section class="gallery-grid">
+    {% set default_subtitle = "Sri Krishna Math · Devotional Moment" %}
     {% for item in gallery %}
-    <figure class="gallery-item" aria-label="{{ item.caption or 'Gallery image' }}">
+    {% set card_title = item.title or item.caption or 'Gallery image' %}
+    {% set card_subtitle = item.subtitle or default_subtitle %}
+    <figure class="gallery-item" aria-label="{{ card_title }}">
       <button
         type="button"
         class="gallery-fullscreen-trigger"
         data-src="{{ item.src }}"
-        data-alt="{{ item.caption or 'Gallery image' }}"
+        data-alt="{{ card_title }}"
+        aria-label="Expand {{ card_title }}"
       >
-        <div class="image-wrapper" style="background-color:#122153">
-          <img
-            src="{{ item.src }}"
-            alt="{{ item.caption or 'Gallery image' }}"
-            decoding="async"
-            sizes="(max-width: 640px) 90vw, (max-width: 1200px) 45vw, 30vw"
-            fetchpriority="{{ 'high' if loop.first else 'auto' }}"
-          />
+        <div class="gallery-card">
+          <div class="gallery-media">
+            <img
+              src="{{ item.src }}"
+              alt="{{ card_title }}"
+              decoding="async"
+              loading="{{ 'eager' if loop.first else 'lazy' }}"
+              sizes="(max-width: 640px) 90vw, (max-width: 1200px) 45vw, 30vw"
+              fetchpriority="{{ 'high' if loop.first else 'auto' }}"
+            />
+            <div class="gallery-overlay">
+              <p class="gallery-overlay-subtitle">{{ card_subtitle }}</p>
+              <h3 class="gallery-overlay-title">{{ card_title }}</h3>
+            </div>
+          </div>
         </div>
       </button>
     </figure>
