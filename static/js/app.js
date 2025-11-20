@@ -1,3 +1,10 @@
+const htmlElement = document.documentElement;
+const supportsIntersectionObserver = 'IntersectionObserver' in window;
+
+if (supportsIntersectionObserver) {
+  htmlElement.classList.add('js-enabled');
+}
+
 // Scroll to top on page load/refresh
 window.addEventListener('load', () => {
   window.scrollTo(0, 0);
@@ -12,21 +19,38 @@ document.addEventListener("DOMContentLoaded", () => {
   // Ensure page is at top on load
   window.scrollTo(0, 0);
   const scrollElements = document.querySelectorAll("[data-scroll]");
-  const observer = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("in-view");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.2,
-    }
-  );
 
-  scrollElements.forEach(el => observer.observe(el));
+  if (!supportsIntersectionObserver) {
+    scrollElements.forEach(el => el.classList.add("in-view"));
+  } else {
+    htmlElement.classList.add('js-animate');
+
+    const revealIfVisible = el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add("in-view");
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.2,
+      }
+    );
+
+    scrollElements.forEach(el => {
+      observer.observe(el);
+      revealIfVisible(el);
+    });
+  }
 
   const hero = document.querySelector(".hero-visual img");
   if (hero) {

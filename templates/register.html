@@ -6,8 +6,8 @@
     <div class="registration-copy glass-card">
       <p class="eyebrow">Laksha Kantha Geetha Parayana · 2025</p>
       <h1>
-        <span class="kannada-highlight">ಭಕ್ತರ ನೋಂದಣಿ</span>
-        <span class="english-subtitle">Devotee Registration Portal</span>
+        <span class="kannada-highlight">Registration Portal</span>
+        
       </h1>
       <p>
         Reserve your seat for the month-long Gita chanting offering at Sri Krishna
@@ -73,6 +73,18 @@
                 {{ course }}
               </option>
               {% endfor %}
+            </select>
+          </label>
+          <label>
+            Category*
+            <select name="category" required>
+              <option value="">Select category</option>
+              <option value="Student" {% if request.form.get('category') == 'Student' %}selected{% endif %}>
+                Student
+              </option>
+              <option value="Volunteer" {% if request.form.get('category') == 'Volunteer' %}selected{% endif %}>
+                Volunteer
+              </option>
             </select>
           </label>
           <label>

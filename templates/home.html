@@ -8,33 +8,47 @@
       <div class="geetotsava-title-wrapper">
         <div class="geetotsava-image-container">
           <img 
-            src="{{ url_for('static', filename='image.png') }}" 
+            src="{{ url_for('static', filename='images/home_img/image.png') }}" 
             alt="Shri Sugunendra Theertha Swamiji" 
             class="geetotsava-side-image geetotsava-left-image"
-            loading="eager"
           />
           <p class="geetotsava-image-name">Shri Sugunendra Theertha<br>Swamiji</p>
         </div>
         <h1 class="geetotsava-title kannada-highlight">ಬೃಹತ್ ಗೀತೋತ್ಸವ</h1>
         <div class="geetotsava-image-container">
           <img 
-            src="{{ url_for('static', filename='image copy.png') }}" 
+            src="{{ url_for('static', filename='images/home_img/image copy.png') }}" 
             alt="Shri Sushreendra Theertha Swamiji" 
             class="geetotsava-side-image geetotsava-right-image"
-            loading="eager"
           />
           <p class="geetotsava-image-name">Shri Sushreendra Theertha<br>Swamiji</p>
         </div>
       </div>
       <p class="geetotsava-date">November 8 - December 7, 2025</p>
     </div>
-    <div class="geetotsava-image-wrapper">
+    <div class="geetotsava-image-wrapper mobile-only">
       <img 
         src="{{ url_for('static', filename='images/WhatsApp-Image-2021-02-22-at-12.19.59-PM-1009x1200.jpeg') }}" 
         alt="ಬೃಹತ್ ಗೀತೋತ್ಸವ" 
         class="geetotsava-image"
-        loading="eager"
       />
+    </div>
+    <div class="geetotsava-desktop-gallery desktop-only">
+      <figure>
+        <img src="{{ url_for('static', filename='images/udupi-krishna-idol.jpg') }}" alt="Udupi Sri Krishna idol close-up" />
+      </figure>
+      <figure>
+        <img src="{{ url_for('static', filename='images/WhatsApp-Image-2021-02-22-at-12.19.59-PM-1009x1200.jpeg') }}" alt="Brihat Geetotsava" />
+      </figure>
+      <figure>
+        <img src="{{ url_for('static', filename='images/home_img/WhatsApp Image 2025-11-19 at 11.44.49_74f8dc8c.jpg') }}" alt="Udupi Krishna temple and Madhwa Sarovara" />
+      </figure>
+      <figure>
+        <img src="{{ url_for('static', filename='images/home_img/69baae818ee7af3c154bb283bf848dc6.jpg') }}" alt="Priest performing aarati" />
+      </figure>
+      <figure>
+        <img src="{{ url_for('static', filename='images/home_img/Udupi-Krishna-swamy.webp') }}" alt="Udupi Krishna with nagabharana" />
+      </figure>
     </div>
   </section>
 
@@ -76,7 +90,7 @@
     </div>
     <div class="hero-visual">
       <img
-        src="{{ url_for('static', filename='images/hero.webp') }}"
+        src="{{ url_for('static', filename='images/home_img/hero.webp') }}"
         alt="Devotees at Sri Krishna Math"
         decoding="async"
       />

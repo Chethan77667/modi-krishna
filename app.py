@@ -41,6 +41,9 @@ ADDITIONAL_GALLERY_FILES = [
     ("WhatsApp Image 2025-11-19 at 11.53.41_f9b61d6a.jpg", "Laksha Deepotsava Sevaks"),
 ]
 
+ASSET_VERSION = os.environ.get("ASSET_VERSION", "20241120")
+CACHE_MAX_AGE = int(os.environ.get("CACHE_MAX_AGE", "600"))
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-in-production")
 app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME", "bbhcadmin")
@@ -218,8 +221,27 @@ def inject_layout_tokens():
             {"href": "/about", "label": "About"},
             {"href": "/register", "label": "Register"},
         ],
+        "asset_version": ASSET_VERSION,
     }
 
+
+@app.after_request
+def apply_response_headers(response):
+    response.headers["Cache-Control"] = f"public, max-age={CACHE_MAX_AGE}"
+    response.headers.pop("Expires", None)
+    response.headers.pop("X-Frame-Options", None)
+    response.headers.pop("X-XSS-Protection", None)
+    csp = (
+        "default-src 'self'; "
+        "img-src 'self' data: https://images.unsplash.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
+        "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
+        "script-src 'self'; "
+        "connect-src 'self'; "
+        "frame-ancestors 'self';"
+    )
+    response.headers["Content-Security-Policy"] = csp
+    return response
 
 @app.route("/")
 def home():
@@ -266,6 +288,7 @@ def register():
             "name": request.form.get("name", "").strip(),
             "college": request.form.get("college", "").strip(),
             "course": request.form.get("course", "").strip(),
+            "category": request.form.get("category", "").strip(),
             "phone": request.form.get("phone", "").strip(),
             "email": request.form.get("email", "").strip(),
             "created_at": datetime.utcnow(),
@@ -278,6 +301,8 @@ def register():
             errors_list.append("Please select your college.")
         if not form_data["course"]:
             errors_list.append("Please select your course.")
+        if form_data["category"] not in {"Student", "Volunteer"}:
+            errors_list.append("Please choose a valid category.")
         if not form_data["phone"] or len(form_data["phone"]) < 8:
             errors_list.append("Please provide a valid phone number.")
         if not form_data["email"] or "@" not in form_data["email"]:
@@ -440,6 +465,7 @@ def export_excel():
                 "Name": reg.get("name"),
                 "College": reg.get("college"),
                 "Course": reg.get("course"),
+                "Category": reg.get("category", ""),
                 "Phone": reg.get("phone"),
                 "Email": reg.get("email"),
                 "Registered On": format_timestamp(reg.get("created_at")),
@@ -540,8 +566,8 @@ def export_pdf():
     pdf.cell(0, 8, datetime.utcnow().strftime("Date: %d-%m-%Y"), ln=True)
     pdf.ln(6)
 
-    headers = ["Name", "College", "Course", "Phone", "Email", "Registered On"]
-    col_widths = [32, 45, 25, 28, 45, 35]
+    headers = ["Name", "College", "Course", "Category", "Phone", "Email", "Registered On"]
+    col_widths = [32, 45, 25, 25, 28, 40, 35]
     usable_width = pdf.w - 2 * pdf.l_margin
     width_scale = usable_width / sum(col_widths)
     col_widths = [w * width_scale for w in col_widths]
@@ -566,6 +592,7 @@ def export_pdf():
             reg.get("name", ""),
             reg.get("college", ""),
             reg.get("course", ""),
+            reg.get("category", ""),
             reg.get("phone", ""),
             reg.get("email", ""),
             format_timestamp(reg.get("created_at")),

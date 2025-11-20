@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1"
+      content="width=device-width, initial-scale=1"
     />
     <title>{{ brand }} | {{ hero.title if hero else 'Udupi' }}</title>
     <link
@@ -16,11 +16,11 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-styles.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css', v=asset_version) }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-styles.css', v=asset_version) }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/app.js', v=asset_version) }}"></script>
   </head>
   <body>
     <div class="cosmic-gradient"></div>
@@ -74,15 +74,6 @@
         </div>
     </div>
     
-    <!-- Action Buttons Section -->
-    <div class="action-buttons-section">
-        <div class="container">
-            <div class="action-buttons-content">
-                <!-- Download Report Button -->
-            </div>
-        </div>
-    </div>
-
     {% with messages = get_flashed_messages(with_categories=True) %}
       {% if messages %}
         <div class="flash-container">

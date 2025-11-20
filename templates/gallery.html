@@ -11,10 +11,8 @@
   </section>
 
   <section class="gallery-grid">
-    {% set default_subtitle = "Sri Krishna Math · Devotional Moment" %}
     {% for item in gallery %}
     {% set card_title = item.title or item.caption or 'Gallery image' %}
-    {% set card_subtitle = item.subtitle or default_subtitle %}
     <figure class="gallery-item" aria-label="{{ card_title }}">
       <button
         type="button"
@@ -33,10 +31,6 @@
               sizes="(max-width: 640px) 90vw, (max-width: 1200px) 45vw, 30vw"
               fetchpriority="{{ 'high' if loop.first else 'auto' }}"
             />
-            <div class="gallery-overlay">
-              <p class="gallery-overlay-subtitle">{{ card_subtitle }}</p>
-              <h3 class="gallery-overlay-title">{{ card_title }}</h3>
-            </div>
           </div>
         </div>
       </button>
