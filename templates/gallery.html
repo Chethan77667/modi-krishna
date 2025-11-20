@@ -6,7 +6,7 @@
     <p class="eyebrow">Visual Gallery</p>
     <h1>Gallery</h1>
     <p>
-      Explore our collection of images showcasing the college, events, and memorable moments.
+      Explore our gallery featuring sacred rituals, cultural events, and cherished moments captured at the temple.
     </p>
   </section>
 
@@ -27,9 +27,9 @@
               src="{{ item.src }}"
               alt="{{ card_title }}"
               decoding="async"
-              loading="{{ 'eager' if loop.first else 'lazy' }}"
+              loading="{{ item.loading if item.loading is defined else ('eager' if loop.first else 'lazy') }}"
               sizes="(max-width: 640px) 90vw, (max-width: 1200px) 45vw, 30vw"
-              fetchpriority="{{ 'high' if loop.first else 'auto' }}"
+              fetchpriority="{{ item.fetchpriority if item.fetchpriority is defined else ('high' if loop.first else 'auto') }}"
             />
           </div>
         </div>

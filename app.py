@@ -1,5 +1,6 @@
 import os
-from datetime import datetime
+import re
+from datetime import datetime, timezone
 from functools import wraps
 from io import BytesIO
 
@@ -21,6 +22,7 @@ from openpyxl.utils import get_column_letter
 from pymongo import MongoClient, errors
 from bson import ObjectId
 from bson.errors import InvalidId
+from zoneinfo import ZoneInfo
 
 from data import (
     current_year,
@@ -33,12 +35,17 @@ from data import (
     storyline,
 )
 
+IST = ZoneInfo("Asia/Kolkata")
+
 ADDITIONAL_GALLERY_FILES = [
-    ("maxresdefault.jpg", "Lakshadeepotsava Celebration"),
-    ("Chariot-udupi-krishna-matha.jpg", "Temple Chariot at Udupi Krishna Matha"),
-    ("FpkEW5iXEAEwWC2.jpg", "Procession of Devotees"),
-    ("dfdce484948261df4827ab9218a87260.jpg", "Alankara of Sri Krishna"),
-    ("WhatsApp Image 2025-11-19 at 11.53.41_f9b61d6a.jpg", "Laksha Deepotsava Sevaks"),
+    ("images/home_img/maxresdefault.jpg", "Lakshadeepotsava Celebration"),
+    ("images/home_img/Chariot-udupi-krishna-matha.jpg", "Temple Chariot at Udupi Krishna Matha"),
+    ("images/home_img/FpkEW5iXEAEwWC2.jpg", "Procession of Devotees"),
+    ("images/home_img/dfdce484948261df4827ab9218a87260.jpg", "Alankara of Sri Krishna"),
+    (
+        "images/home_img/WhatsApp Image 2025-11-19 at 11.53.41_f9b61d6a.jpg",
+        "Laksha Deepotsava Sevaks",
+    ),
 ]
 
 ASSET_VERSION = os.environ.get("ASSET_VERSION", "20241120")
@@ -71,6 +78,7 @@ DEFAULT_COURSES = [
 mongo_client = None
 mongo_db = None
 
+PHONE_PATTERN = re.compile(r"^[6-9]\d{9}$")
 
 def get_db():
     """Return MongoDB database handle or None if unavailable."""
@@ -125,6 +133,7 @@ def fetch_registrations():
     registrations = []
     for entry in db.registrations.find().sort("created_at", 1):
         entry["_id"] = str(entry["_id"])
+        entry["formatted_created_at"] = format_timestamp(entry.get("created_at"))
         registrations.append(entry)
     return registrations
 
@@ -148,10 +157,25 @@ def db_unavailable_message():
     )
 
 
-def format_timestamp(value):
+def format_timestamp(value, fmt="%d %b %Y · %I:%M %p"):
     if isinstance(value, datetime):
-        return value.strftime("%d %b %Y · %I:%M %p")
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.astimezone(IST).strftime(fmt)
     return value or ""
+
+
+def normalize_phone(raw_phone):
+    digits = re.sub(r"\D", "", raw_phone or "")
+
+    if len(digits) == 12 and digits.startswith("91"):
+        digits = digits[2:]
+    elif len(digits) == 11 and digits.startswith("0"):
+        digits = digits[1:]
+
+    if PHONE_PATTERN.fullmatch(digits):
+        return f"+91{digits}"
+    return None
 
 
 def get_gallery_images():
@@ -205,6 +229,9 @@ def get_additional_gallery_images():
             {
                 "src": url_for("static", filename=filename),
                 "caption": caption,
+                "title": caption,
+                "loading": "eager",
+                "fetchpriority": "high",
             }
         )
     return images
@@ -284,14 +311,14 @@ def register():
     db = get_db()
 
     if request.method == "POST":
+        raw_phone = request.form.get("phone", "").strip()
         form_data = {
             "name": request.form.get("name", "").strip(),
             "college": request.form.get("college", "").strip(),
             "course": request.form.get("course", "").strip(),
             "category": request.form.get("category", "").strip(),
-            "phone": request.form.get("phone", "").strip(),
             "email": request.form.get("email", "").strip(),
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(timezone.utc),
         }
 
         errors_list = []
@@ -303,8 +330,9 @@ def register():
             errors_list.append("Please select your course.")
         if form_data["category"] not in {"Student", "Volunteer"}:
             errors_list.append("Please choose a valid category.")
-        if not form_data["phone"] or len(form_data["phone"]) < 8:
-            errors_list.append("Please provide a valid phone number.")
+        normalized_phone = normalize_phone(raw_phone)
+        if not normalized_phone:
+            errors_list.append("Please provide a valid 10-digit Indian mobile number.")
         if form_data["email"] and "@" not in form_data["email"]:
             errors_list.append("Please provide a valid email address.")
 
@@ -330,24 +358,31 @@ def register():
                 503,
             )
 
-        existing_registration = db.registrations.find_one(
-            {
-                "name": form_data["name"],
-                "college": form_data["college"],
-                "course": form_data["course"],
-                "category": form_data["category"],
-                "phone": form_data["phone"],
-                "email": form_data["email"],
-            }
+        form_data["phone"] = normalized_phone
+
+        duplicate_phone = db.registrations.find_one({"phone": normalized_phone})
+        duplicate_email = (
+            db.registrations.find_one({"email": form_data["email"]})
+            if form_data["email"]
+            else None
         )
 
-        if existing_registration:
-            session["registration_duplicate"] = True
-            flash(
-                "These details are already registered. Jai Sri Krishna!",
-                "warning",
+        duplicate_messages = []
+        if duplicate_phone:
+            duplicate_messages.append("This mobile number is already registered.")
+        if duplicate_email:
+            duplicate_messages.append("This email address is already registered.")
+
+        if duplicate_messages:
+            for msg in duplicate_messages:
+                flash(msg, "warning")
+            return render_template(
+                "register.html",
+                hero=hero_story,
+                colleges=colleges,
+                courses=courses,
+                registration_duplicate=True,
             )
-            return redirect(url_for("register"))
 
         db.registrations.insert_one(form_data)
         session["registration_success"] = True

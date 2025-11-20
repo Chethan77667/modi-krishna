@@ -95,7 +95,7 @@
         decoding="async"
       />
       <div class="floating-card">
-        <p>Prime Minister Narendra Modi</p>
+        <p>Prime Minister Shri Narendra Modi</p>
         <small>Reciting the concluding Bhagavad Gita verses</small>
       </div>
     </div>
@@ -141,22 +141,6 @@
     <div class="story-grid">
       {% for point in storyline %}
       <p>{{ point }}</p>
-      {% endfor %}
-    </div>
-  </section>
-
-  <section class="dignitaries" data-scroll>
-    <header>
-      <p class="eyebrow">Guiding Lights</p>
-      <h2>Voices of the Utsava</h2>
-    </header>
-    <div class="dignitary-grid">
-      {% for leader in dignitaries %}
-      <article>
-        <h3>{{ leader.name }}</h3>
-        <p class="role">{{ leader.role }}</p>
-        <p>{{ leader.note }}</p>
-      </article>
       {% endfor %}
     </div>
   </section>

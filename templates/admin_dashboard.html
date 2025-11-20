@@ -152,11 +152,7 @@
             <td data-label="Phone">{{ reg.phone }}</td>
             <td data-label="Email">{{ reg.email }}</td>
             <td data-label="Registered">
-              {% if reg.created_at %}
-                {{ reg.created_at.strftime('%d %b %Y · %I:%M %p') }}
-              {% else %}
-                —
-              {% endif %}
+              {{ reg.formatted_created_at or '—' }}
             </td>
             <td data-label="Actions" class="action-cell">
               <form

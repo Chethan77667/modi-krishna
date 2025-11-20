@@ -92,9 +92,12 @@
             <input
               type="tel"
               name="phone"
-              placeholder="+91 9XXXXXXXXX"
+              placeholder="Enter 10-digit mobile number"
               value="{{ request.form.get('phone', '') }}"
-              pattern="[0-9+\-\s]{8,}"
+              pattern="^[6-9]\d{9}$"
+              minlength="10"
+              maxlength="10"
+              inputmode="numeric"
               required
             />
           </label>
