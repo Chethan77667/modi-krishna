@@ -246,11 +246,25 @@ a {
 
 .geetotsava-desktop-gallery {
   margin-top: 2rem;
+  width: 100%;
+  overflow: hidden;
+}
+
+.geetotsava-desktop-gallery-track {
+  width: min(1200px, 90vw);
+  margin: 0 auto;
   display: flex;
-  gap: clamp(0.85rem, 2vw, 1.3rem);
-  overflow-x: auto;
-  padding-bottom: 1rem;
-  scroll-snap-type: x proximity;
+  flex-wrap: nowrap;
+  gap: clamp(0.85rem, 2vw, 1.5rem);
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+@media (max-width: 1200px) and (min-width: 769px) {
+  .geetotsava-desktop-gallery {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
 }
 
 .geetotsava-desktop-gallery::-webkit-scrollbar {
@@ -263,8 +277,9 @@ a {
 }
 
 .geetotsava-desktop-gallery figure {
-  flex: 0 0 clamp(220px, 20vw, 300px);
-  aspect-ratio: 359 / 239;
+  flex: 1;
+  min-width: 0;
+  aspect-ratio: 3 / 4;
   margin: 0;
   border-radius: 1.25rem;
   overflow: hidden;
@@ -285,8 +300,6 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  min-height: 100%;
-  min-width: 100%;
   display: block;
 }
 
@@ -298,13 +311,19 @@ a {
   display: block;
 }
 
-@media (min-width: 769px) {
+@media (min-width: 481px) {
   .desktop-only {
     display: block;
   }
 
   .mobile-only {
     display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .desktop-only {
+    display: block;
   }
 }
 .geetotsava-image-wrapper:hover {
