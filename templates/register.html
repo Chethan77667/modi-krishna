@@ -99,13 +99,12 @@
             />
           </label>
           <label>
-            Email*
+            Email
             <input
               type="email"
               name="email"
               placeholder="you@example.com"
               value="{{ request.form.get('email', '') }}"
-              required
             />
           </label>
         </div>
@@ -113,7 +112,7 @@
           By registering you consent to communications from Dr. B. B. Hegde First
           Grade College (organising partner) and Sri Krishna Matha coordinators.
         </p>
-        <button type="submit" class="btn primary full-width">
+        <button type="submit" class="btn primary registration-submit-btn">
           Submit Registration
         </button>
       </form>
@@ -125,25 +124,24 @@
     <div class="success-modal glass-card">
       <h3>Registration Successful</h3>
       <p>Registered successfully.</p>
+      <button type="button" class="btn secondary close-modal-btn modal-refresh-btn">
+        Okay
+      </button>
+    </div>
+  </div>
+  {% endif %}
+  {% if registration_duplicate %}
+  <div id="registrationDuplicateModal" class="modal-overlay">
+    <div class="success-modal glass-card warning-state">
+      <h3>Already Registered</h3>
+      <p>These details are already on record.</p>
+      <button type="button" class="btn secondary close-modal-btn modal-refresh-btn">
+        Okay
+      </button>
     </div>
   </div>
   {% endif %}
 </main>
 
-{% if registration_success %}
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("registrationSuccessModal");
-    const hideModal = () => {
-      modal?.classList.add("hidden");
-      modal?.addEventListener("transitionend", () => modal.remove(), { once: true });
-    };
-    setTimeout(hideModal, 2000);
-    modal?.addEventListener("click", event => {
-      if (event.target === modal) hideModal();
-    });
-  });
-</script>
-{% endif %}
 {% endblock %}
 

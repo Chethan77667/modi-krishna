@@ -305,7 +305,7 @@ def register():
             errors_list.append("Please choose a valid category.")
         if not form_data["phone"] or len(form_data["phone"]) < 8:
             errors_list.append("Please provide a valid phone number.")
-        if not form_data["email"] or "@" not in form_data["email"]:
+        if form_data["email"] and "@" not in form_data["email"]:
             errors_list.append("Please provide a valid email address.")
 
         if errors_list:
@@ -330,12 +330,32 @@ def register():
                 503,
             )
 
+        existing_registration = db.registrations.find_one(
+            {
+                "name": form_data["name"],
+                "college": form_data["college"],
+                "course": form_data["course"],
+                "category": form_data["category"],
+                "phone": form_data["phone"],
+                "email": form_data["email"],
+            }
+        )
+
+        if existing_registration:
+            session["registration_duplicate"] = True
+            flash(
+                "These details are already registered. Jai Sri Krishna!",
+                "warning",
+            )
+            return redirect(url_for("register"))
+
         db.registrations.insert_one(form_data)
         session["registration_success"] = True
         flash("Jai Sri Krishna! Your registration is confirmed.", "success")
         return redirect(url_for("register"))
 
     registration_success = session.pop("registration_success", False)
+    registration_duplicate = session.pop("registration_duplicate", False)
 
     return render_template(
         "register.html",
@@ -343,6 +363,7 @@ def register():
         colleges=colleges,
         courses=courses,
         registration_success=registration_success,
+        registration_duplicate=registration_duplicate,
     )
 
 

@@ -616,14 +616,14 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .desktop-nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .nav-link-item {
@@ -1912,6 +1912,7 @@ body.modal-open {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
+  margin-top: 1.5rem;
 }
 
 .registration-hero {
@@ -1925,6 +1926,7 @@ body.modal-open {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .registration-copy h1 {
@@ -2034,6 +2036,17 @@ body.modal-open {
 .registration-form .btn.primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 24px 50px rgba(255, 215, 0, 0.45);
+}
+
+.registration-submit-btn {
+  width: clamp(180px, 40vw, 240px);
+  align-self: center;
+  justify-content: center;
+  transition: width 0.3s ease;
+}
+
+.registration-submit-btn:hover {
+  width: clamp(200px, 45vw, 280px);
 }
 
 /* Admin auth */
@@ -2379,6 +2392,15 @@ body.modal-open {
 .success-modal p {
   color: var(--muted);
   margin-bottom: 1.25rem;
+}
+
+.success-modal.warning-state {
+  border: 1px solid rgba(255, 199, 0, 0.5);
+  background: rgba(24, 18, 60, 0.95);
+}
+
+.success-modal.warning-state h3 {
+  color: #ffdd57;
 }
 
 .close-modal-btn {

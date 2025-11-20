@@ -220,3 +220,105 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+(function () {
+  const MODAL_IDS = ["registrationSuccessModal", "registrationDuplicateModal"];
+
+  const handleModal = modal => {
+    if (!modal) return;
+    const hideModal = () => {
+      modal.classList.add("hidden");
+      setTimeout(() => modal.remove(), 300);
+    };
+    setTimeout(hideModal, 2000);
+    modal.addEventListener("click", event => {
+      if (event.target === modal) hideModal();
+    });
+  };
+
+  const initRegistrationModals = () => {
+    if (!MODAL_IDS.some(id => document.getElementById(id))) {
+      return;
+    }
+
+    MODAL_IDS.forEach(id => {
+      const modal = document.getElementById(id);
+      handleModal(modal);
+      modal?.querySelectorAll(".close-modal-btn").forEach(button => {
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          modal.classList.add("hidden");
+          setTimeout(() => modal.remove(), 300);
+        });
+      });
+      modal?.querySelectorAll(".modal-refresh-btn").forEach(button => {
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          window.location.replace(window.location.href);
+        });
+      });
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initRegistrationModals);
+  } else {
+    initRegistrationModals();
+  }
+})();
+
+(function () {
+  const initDeleteModal = () => {
+    const modal = document.getElementById("deleteModal");
+    if (!modal) return;
+
+    const modalText = document.getElementById("deleteModalText");
+    const confirmBtn = document.getElementById("confirmDeleteBtn");
+    let formToSubmit = null;
+
+    const closeModal = () => {
+      modal.classList.remove("is-open");
+      formToSubmit = null;
+    };
+
+    document.querySelectorAll(".delete-trigger").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const targetForm = document.getElementById(btn.dataset.target);
+        if (!targetForm) return;
+
+        formToSubmit = targetForm;
+        modalText.textContent = `Are you sure you want to delete the registration for "${btn.dataset.name}"? This cannot be undone.`;
+        modal.classList.add("is-open");
+        confirmBtn?.focus();
+      });
+    });
+
+    document.querySelectorAll("[data-modal-cancel]").forEach(btn => {
+      btn.addEventListener("click", closeModal);
+    });
+
+    confirmBtn?.addEventListener("click", () => {
+      if (formToSubmit) {
+        formToSubmit.submit();
+      }
+    });
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && modal.classList.contains("is-open")) {
+        closeModal();
+      }
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDeleteModal);
+  } else {
+    initDeleteModal();
+  }
+})();
+
