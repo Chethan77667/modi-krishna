@@ -187,6 +187,8 @@ def get_gallery_images():
                     {
                         "src": url_for("static", filename=f"images/{filename}"),
                         "caption": caption,
+                        "title": caption,
+                        "subtitle": "Sri Krishna Math · Devotional Moment",
                     }
                 )
 
