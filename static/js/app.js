@@ -65,6 +65,26 @@ document.addEventListener("DOMContentLoaded", () => {
       hero.style.transform = "none";
     });
   }
+
+  // Registration form: custom phone number validation message
+  const phoneInput = document.querySelector('input[name="phone"]');
+  if (phoneInput) {
+    phoneInput.addEventListener("invalid", (event) => {
+      const target = event.target;
+      target.setCustomValidity("");
+      if (
+        target.validity.patternMismatch ||
+        target.validity.tooShort ||
+        target.validity.tooLong
+      ) {
+        target.setCustomValidity("Phone number should have 10 digits.");
+      }
+    });
+
+    phoneInput.addEventListener("input", (event) => {
+      event.target.setCustomValidity("");
+    });
+  }
 });
 
 // Mobile menu open function (on hover) - disabled for mobile, only for desktop hover
@@ -319,6 +339,88 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener("DOMContentLoaded", initDeleteModal);
   } else {
     initDeleteModal();
+  }
+})();
+
+// Background audio playback - Additional fallback and smooth continuation
+// (Main audio logic is in base.html inline script for earlier execution)
+(function () {
+  const audio = document.getElementById("site-background-audio");
+  if (!audio) return;
+  
+  // Ensure volume is maintained
+  audio.volume = 0.5;
+  
+  // Final attempt to play when external script loads
+  const finalAttempt = () => {
+    if (audio.paused && !audio.ended) {
+      audio.play().catch(() => {
+        // Will be handled by main script
+      });
+    }
+  };
+  
+  // Try when script loads
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(finalAttempt, 100);
+  } else {
+    document.addEventListener("DOMContentLoaded", () => setTimeout(finalAttempt, 100), { once: true });
+    window.addEventListener("load", () => setTimeout(finalAttempt, 100), { once: true });
+  }
+  
+  // Ensure smooth continuation across page navigation (SPA-like behavior)
+  // Store current time before navigation
+  let storedTime = null;
+  
+  window.addEventListener('beforeunload', () => {
+    if (audio && !audio.paused) {
+      storedTime = audio.currentTime;
+    }
+  });
+  
+  // Restore position if available
+  if (storedTime !== null && audio.readyState >= 2) {
+    audio.currentTime = storedTime;
+    audio.play().catch(() => {});
+  }
+})();
+
+// Set active state for mobile bottom navigation and desktop navigation
+(function () {
+  const setActiveNavLink = () => {
+    const currentPath = window.location.pathname;
+    
+    // Mobile bottom navigation
+    const bottomNavLinks = document.querySelectorAll('.bottom-nav-link');
+    bottomNavLinks.forEach(link => {
+      const linkPath = new URL(link.href).pathname;
+      link.classList.remove('active');
+      
+      if (currentPath === linkPath || 
+          (currentPath === '/' && linkPath === '/') ||
+          (currentPath.startsWith(linkPath) && linkPath !== '/')) {
+        link.classList.add('active');
+      }
+    });
+    
+    // Desktop navigation
+    const desktopNavLinks = document.querySelectorAll('.desktop-nav .nav-link');
+    desktopNavLinks.forEach(link => {
+      const linkPath = new URL(link.href).pathname;
+      link.classList.remove('active');
+      
+      if (currentPath === linkPath || 
+          (currentPath === '/' && linkPath === '/') ||
+          (currentPath.startsWith(linkPath) && linkPath !== '/')) {
+        link.classList.add('active');
+      }
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setActiveNavLink);
+  } else {
+    setActiveNavLink();
   }
 })();
 

@@ -2,24 +2,24 @@ from datetime import datetime
 
 hero_story = {
     "title": "ಲಕ್ಷ ಕಂಠ ಗೀತಾ ಪಾರಾಯಣ",
-    "title_en": "Laksha Kantha Geetha Parayana",
+    "title_en": "Laksha Kanta Geetha Parayana",
     "tagline": "ಒಂದು ಲಕ್ಷ ಭಕ್ತರ ಸ್ವರಗಳು • ಶ್ರೀ ಕೃಷ್ಣ ಮಠ, ಉಡುಪಿ",
     "tagline_en": "Voices of a Lakh Devotees • Sri Krishna Math, Udupi",
     "date": "28 November 2025",
-    "location": "ಸುವರ್ಣ ತೀರ್ಥ ಮಂಟಪ & ಬೈಲ್ಕೆರೆ ಮೈದಾನ, ಉಡುಪಿ",
-    "location_en": "Suvarna Teertha Mantapa & Bailkere Grounds, Udupi",
+    "location": "ಬೈಲ್ಕೆರೆ ಮೈದಾನ, ಉಡುಪಿ",
+    "location_en": "Bailkere Grounds, Udupi",
     "lead": (
         "ಪ್ರಧಾನ ಮಂತ್ರಿ ನರೇಂದ್ರ ಮೋದಿಯವರು ಐತಿಹಾಸಿಕ ಶ್ರೀ ಕೃಷ್ಣ ಮಠದಲ್ಲಿ ಪವಿತ್ರ "
         "ಲಕ್ಷ ಕಂಠ ಗೀತಾ ಪಾರಾಯಣಕ್ಕೆ ಒಂದು ಲಕ್ಷ ಭಕ್ತರೊಂದಿಗೆ ಸೇರಲಿದ್ದಾರೆ. ಈ ಸಾಮೂಹಿಕ ಪಾರಾಯಣ "
         "ಶ್ರೀ ಮಧ್ವಾಚಾರ್ಯರಿಂದ ಕಲ್ಪಿಸಲಾದ ಭಗವದ್ಗೀತೆಯ ಜೀವಂತ ಸಂಪ್ರದಾಯವನ್ನು ಆಚರಿಸುತ್ತದೆ."
     ),
     "lead_en": (
-        "Prime Minister Narendra Modi will join one lakh devotees for the sacred "
-        "Laksha Kantha Geetha Parayana at the historic Sri Krishna Math. The mass recitation "
-        "celebrates the living tradition of the Bhagavad Gita as envisioned by "
+        "Prime Minister Shri Narendra Modi will join one lakh devotees for the sacred "
+        "Laksha Kanta Geetha Parayana at the historic Sri Krishna Math. The mass recitation "
+        "celebrates the living tradition of the Bhagawad Geetha as envisioned by "
         "Sri Madhwacharya."
     ),
-    "cta_primary": "ಪಠನವನ್ನು ಅನುಭವಿಸಿ",
+    "cta_primary": "ಪಠಣವನ್ನು ಅನುಭವಿಸಿ",
     "cta_primary_en": "Experience the Chant",
     "cta_secondary": "ಸಂಪೂರ್ಣ ಕಾರ್ಯಕ್ರಮವನ್ನು ವೀಕ್ಷಿಸಿ",
     "cta_secondary_en": "View Full Program",
@@ -27,31 +27,31 @@ hero_story = {
 
 highlights = [
     {
-        "label": "Shatha Shloka Recital",
+        "label": "Laksha Shloka Recital",
         "value": "1,00,000+",
-        "detail": "voices resonating with the Bhagavad Gita across Udupi.",
+        "detail": "Voices resonating with the Bhagawad Geetha across Udupi.",
     },
     {
         "label": "Historic Venue",
         "value": "Sri Krishna Math",
-        "detail": "epicentre of Madhwa philosophy and Vaishnavite heritage.",
+        "detail": "Epicentre of Madhwa philosophy and Vaishnavite heritage.",
     },
     {
         "label": "Special Guest",
-        "value": "PM Narendra Modi",
-        "detail": "returns to offer prayers after 16 years.",
+        "value": "PM Shri Narendra Modi",
+        "detail": "Returns to offer prayers after 16 years.",
     },
 ]
 
 schedule = [
     {
         "time": "04:30 PM • Nov 8",
-        "title": "Gita Utsava Inauguration",
+        "title": "Geetha Utsava Inauguration",
         "description": (
             "Sri Vishwaprasanna Theertha Swamiji will open the month-long festival "
-            "at Gita Mandir with Vedic invocations."
+            "at Geetha Mandir with Vedic invocations."
         ),
-        "category": "Utsava",
+       
     },
     {
         "time": "Nov 8 - Dec 7",
@@ -60,25 +60,25 @@ schedule = [
             "Daily satsangs, bhajans, and Sant Sandesha sessions highlighting "
             "the message of universal devotion."
         ),
-        "category": "Cultural",
+       
     },
     {
         "time": "Nov 28 • 09:00 AM",
-        "title": "Laksha Kantha Gita Parayana",
+        "title": "Laksha Kanta Geetha Parayana",
         "description": (
-            "Over one lakh devotees will chant the Bhagavad Gita in unison at "
+            "Over one lakh devotees will chant the Bhagawad Geetha in unison at "
             "Bailkere Grounds, culminating in the Prime Minister reciting the final verses."
         ),
-        "category": "Main Event",
+       
     },
     {
         "time": "Nov 28 • 12:00 PM",
         "title": "Prime Minister's Darshan",
         "description": (
-            "PM Narendra Modi will visit Sri Krishna Math, offer prayers to Lord "
+            "PM Shri Narendra Modi will visit Sri Krishna Math, offer prayers to Lord "
             "Krishna and Mukhyaprana, and inaugurate the golden Kanaka Kavacha."
         ),
-        "category": "Darshan",
+       
     },
 ]
 
@@ -86,12 +86,12 @@ dignitaries = [
     {
         "name": "Sri Sugunendra Theertha Swamiji",
         "role": "Paryaya Puthige Math Seer",
-        "note": "Architect of the Vishwagita Paryaya & Laksha Kantha Geetha Parayana vision.",
+        "note": "Architect of the VishwaGeetha Paryaya & Laksha Kanta Geetha Parayana vision.",
     },
     {
         "name": "Sri Vishwaprasanna Theertha Swamiji",
         "role": "Pejawar Math Seer",
-        "note": "Inaugurating the Gita Utsava with blessings for all devotees.",
+        "note": "Inaugurating the Geetha Utsava with blessings for all devotees.",
     },
     {
         "name": "Shri Narendra Modi",
@@ -121,8 +121,8 @@ gallery_slides = [
     },
     {
         "src": "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=1200&q=80",
-        "caption": "Devotees reciting Gita verses under the open sky.",
-        "title": "Gita Parayana Chorus",
+        "caption": "Devotees reciting Geetha verses under the open sky.",
+        "title": "Geetha Parayana Chorus",
         "subtitle": "Bailkere Grounds · Collective Chant",
     },
     {
@@ -134,7 +134,7 @@ gallery_slides = [
 ]
 
 storyline = [
-    "The Laksha Kantha Geetha Parayana marks the crescendo of the fourth Vishwagita Paryaya led by Sri Sugunendra Theertha Swamiji.",
+    "The Laksha Kanta Geetha Parayana marks the crescendo of the fourth VishwaGeetha Paryaya led by Sri Sugunendra Theertha Swamiji.",
     "This is Prime Minister Modi's first visit to Udupi Sri Krishna Math after becoming Prime Minister, rekindling his connection from 2008.",
     "The golden Kanaka Kavacha inauguration at Suvarna Teertha Mantapa highlights the Math's timeless craftsmanship.",
     "State and central agencies are collaborating to welcome thousands of devotees with seamless darshan and spiritual immersion.",
@@ -143,14 +143,14 @@ storyline = [
 events = [
     {
         "title": "ಲಕ್ಷ ಕಂಠ ಗೀತಾ ಪಾರಾಯಣ",
-        "title_en": "Laksha Kantha Gita Parayana",
+        "title_en": "Laksha Kanta Geetha Parayana",
         "category": "ಪಠನ",
         "category_en": "Chanting",
         "day": "Nov 28, 9:00 AM",
         "venue": "ಬೈಲ್ಕೆರೆ ಮೈದಾನ",
         "venue_en": "Bailkere Grounds",
         "summary": "1 ಲಕ್ಷ ಧ್ವನಿಗಳು ಒಟ್ಟಿಗೆ ಭಗವದ್ಗೀತೆಯನ್ನು ಪಠಿಸುವ ಭಕ್ತಿಯ ಸಮುದ್ರ.",
-        "summary_en": "A sea of devotion as 1 lakh voices recite the Bhagavad Gita together.",
+        "summary_en": "A sea of devotion as 1 lakh voices recite the Bhagawad Geetha together.",
         "highlight": "ಪ್ರಧಾನ ಮಂತ್ರಿ ಮೋದಿ ಭಗವಾನ್ ಕೃಷ್ಣನಿಗೆ ಅರ್ಪಿಸಿ ಕೊನೆಯ ಹತ್ತು ಶ್ಲೋಕಗಳನ್ನು ಪಠಿಸುತ್ತಾರೆ.",
         "highlight_en": "PM Modi recites the final ten verses dedicating them to Lord Krishna.",
         "image": "PM Modi-30oct25.webp",
@@ -162,7 +162,7 @@ events = [
         "category_en": "Spiritual Dialogue",
         "day": "Nov 15, 6:00 PM",
         "venue": "ಗೀತಾ ಮಂದಿರ",
-        "venue_en": "Gita Mandir",
+        "venue_en": "Geetha Mandir",
         "summary": "ಭಾರತದಾದ್ಯಂತದ ಸಂತರು ಭಕ್ತಿ ಮತ್ತು ಧರ್ಮದ ಕಾಲರಹಿತ ಸಂದೇಶಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಾರೆ.",
         "summary_en": "Saints from across Bharat share timeless messages on Bhakti and Dharma.",
         "highlight": "ಸಂತ ಸಂದೇಶ ಮತ್ತು ಸಂತ ಸನ್ಮಾನ ಆಧ್ಯಾತ್ಮಿಕ ಪ್ರಕಾಶಕರನ್ನು ಗೌರವಿಸುತ್ತದೆ.",
@@ -185,7 +185,7 @@ events = [
     },
     {
         "title": "ಗೀತಾ ಚಿಂತನ ಕಾರ್ಯಾಗಾರಗಳು",
-        "title_en": "Gita Chintana Workshops",
+        "title_en": "Geetha Chintana Workshops",
         "category": "ಕಲಿಕೆ",
         "category_en": "Learning",
         "day": "Nov 24, 10:00 AM",

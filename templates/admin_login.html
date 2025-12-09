@@ -11,21 +11,29 @@
     <form method="post" class="auth-form" autocomplete="off">
       <label>
         Username
-        <input
-          type="text"
-          name="username"
-          placeholder="Enter username"
-          required
-        />
+        <div class="input-field-wrapper">
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter username"
+            required
+          />
+        </div>
       </label>
       <label>
         Password
-        <input
-          type="password"
-          name="password"
-          placeholder="••••••••"
-          required
-        />
+        <div class="input-field-wrapper password-input-wrapper">
+          <input
+            type="password"
+            name="password"
+            id="admin-password"
+            placeholder="••••••••"
+            required
+          />
+          <button type="button" class="password-toggle" id="password-toggle" aria-label="Toggle password visibility">
+            <i class="fas fa-eye" id="eye-icon"></i>
+          </button>
+        </div>
       </label>
       <button type="submit" class="btn primary full-width">Access Admin Panel</button>
     </form>
@@ -34,5 +42,27 @@
     </p>
   </section>
 </main>
+<script>
+  // Password visibility toggle
+  document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('admin-password');
+    const passwordToggle = document.getElementById('password-toggle');
+    const eyeIcon = document.getElementById('eye-icon');
+    
+    if (passwordToggle && passwordInput && eyeIcon) {
+      passwordToggle.addEventListener('click', function() {
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          eyeIcon.classList.remove('fa-eye');
+          eyeIcon.classList.add('fa-eye-slash');
+        } else {
+          passwordInput.type = 'password';
+          eyeIcon.classList.remove('fa-eye-slash');
+          eyeIcon.classList.add('fa-eye');
+        }
+      });
+    }
+  });
+</script>
 {% endblock %}
 

@@ -53,8 +53,8 @@ CACHE_MAX_AGE = int(os.environ.get("CACHE_MAX_AGE", "600"))
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-in-production")
-app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME", "bbhcadmin")
-app.config["ADMIN_PASSWORD"] = os.environ.get("ADMIN_PASSWORD", "bbhc@2005")
+app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME", "admin")
+app.config["ADMIN_PASSWORD"] = os.environ.get("ADMIN_PASSWORD", "brahatgeetha2025")
 app.config["MONGO_URI"] = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
 app.config["MONGO_DB_NAME"] = os.environ.get("MONGO_DB_NAME", "krishna_event")
 
@@ -125,13 +125,39 @@ def save_form_options(colleges, courses):
     return True
 
 
-def fetch_registrations():
+def fetch_registrations(search_query=None, college_filter=None):
+    """Fetch all registrations, optionally filtered by search query and/or college."""
     db = get_db()
     if db is None:
         return []
 
+    query = {}
+    
+    # College filter (exact match)
+    if college_filter and college_filter.strip():
+        query["college"] = college_filter.strip()
+    
+    # Search query (across multiple fields)
+    if search_query and search_query.strip():
+        search_regex = {"$regex": search_query.strip().lower(), "$options": "i"}
+        search_conditions = {
+            "$or": [
+                {"name": search_regex},
+                {"college": search_regex},
+                {"course": search_regex},
+                {"role": search_regex},
+                {"phone": search_regex},
+                {"email": search_regex},
+            ]
+        }
+        # Combine college filter with search
+        if college_filter and college_filter.strip():
+            query = {"$and": [{"college": college_filter.strip()}, search_conditions]}
+        else:
+            query = search_conditions
+
     registrations = []
-    for entry in db.registrations.find().sort("created_at", 1):
+    for entry in db.registrations.find(query).sort("created_at", 1):
         entry["_id"] = str(entry["_id"])
         entry["formatted_created_at"] = format_timestamp(entry.get("created_at"))
         registrations.append(entry)
@@ -165,6 +191,20 @@ def format_timestamp(value, fmt="%d %b %Y · %I:%M %p"):
     return value or ""
 
 
+@app.template_filter("format_phone")
+def format_phone(phone: str) -> str:
+    """Return the raw 10-digit phone number for display/exports.
+
+    Handles legacy values stored with +91 prefixes by stripping them.
+    """
+    if not phone:
+        return ""
+    digits = re.sub(r"\D", "", str(phone))
+    if len(digits) == 12 and digits.startswith("91"):
+        digits = digits[2:]
+    return digits
+
+
 def normalize_phone(raw_phone):
     digits = re.sub(r"\D", "", raw_phone or "")
 
@@ -174,7 +214,8 @@ def normalize_phone(raw_phone):
         digits = digits[1:]
 
     if PHONE_PATTERN.fullmatch(digits):
-        return f"+91{digits}"
+        # Store just the 10-digit number; display formatting handled elsewhere.
+        return digits
     return None
 
 
@@ -263,12 +304,18 @@ def apply_response_headers(response):
         "img-src 'self' data: https://images.unsplash.com; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; "
-        "script-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
         "connect-src 'self'; "
         "frame-ancestors 'self';"
     )
     response.headers["Content-Security-Policy"] = csp
     return response
+
+@app.route("/favicon.ico")
+def favicon():
+    # Return 204 No Content to remove favicon/logo from title
+    from flask import Response
+    return Response(status=204)
 
 @app.route("/")
 def home():
@@ -316,7 +363,7 @@ def register():
             "name": request.form.get("name", "").strip(),
             "college": request.form.get("college", "").strip(),
             "course": request.form.get("course", "").strip(),
-            "category": request.form.get("category", "").strip(),
+            "role": request.form.get("role", "").strip(),
             "email": request.form.get("email", "").strip(),
             "created_at": datetime.now(timezone.utc),
         }
@@ -328,8 +375,9 @@ def register():
             errors_list.append("Please select your college.")
         if not form_data["course"]:
             errors_list.append("Please select your course.")
-        if form_data["category"] not in {"Student", "Volunteer"}:
-            errors_list.append("Please choose a valid category.")
+        valid_roles = {"Student", "Faculty", "Volunteer"}
+        if form_data["role"] not in valid_roles:
+            errors_list.append("Please choose a valid role.")
         normalized_phone = normalize_phone(raw_phone)
         if not normalized_phone:
             errors_list.append("Please provide a valid 10-digit Indian mobile number.")
@@ -360,7 +408,9 @@ def register():
 
         form_data["phone"] = normalized_phone
 
-        duplicate_phone = db.registrations.find_one({"phone": normalized_phone})
+        duplicate_phone = db.registrations.find_one(
+            {"phone": {"$in": [normalized_phone, f"+91{normalized_phone}"]}}
+        )
         duplicate_email = (
             db.registrations.find_one({"email": form_data["email"]})
             if form_data["email"]
@@ -426,18 +476,91 @@ def admin_logout():
     return redirect(url_for("admin_login"))
 
 
+@app.route("/admin/api/registrations", methods=["GET"])
+def admin_api_registrations():
+    """API endpoint for paginated and searchable registrations."""
+    # Check authentication for API endpoint
+    if not session.get("admin_authenticated"):
+        return jsonify({"error": "Authentication required"}), 401
+    
+    db = get_db()
+    if db is None:
+        return jsonify({"error": "Database unavailable"}), 503
+
+    # Get query parameters
+    page = int(request.args.get("page", 1))
+    limit = int(request.args.get("limit", 10))
+    search_query = request.args.get("search", "").strip().lower()
+    college_filter = request.args.get("college", "").strip()
+
+    # Build query
+    query = {}
+    
+    # College filter (exact match)
+    if college_filter:
+        query["college"] = college_filter
+    
+    # Search query (across multiple fields)
+    if search_query:
+        search_regex = {"$regex": search_query, "$options": "i"}
+        search_conditions = {
+            "$or": [
+                {"name": search_regex},
+                {"college": search_regex},
+                {"course": search_regex},
+                {"role": search_regex},
+                {"phone": search_regex},
+                {"email": search_regex},
+            ]
+        }
+        # Combine college filter with search
+        if college_filter:
+            query = {"$and": [{"college": college_filter}, search_conditions]}
+        else:
+            query = search_conditions
+
+    # Get total count
+    total_count = db.registrations.count_documents(query)
+
+    # Calculate skip
+    skip = (page - 1) * limit
+
+    # Fetch registrations
+    registrations = []
+    for entry in (
+        db.registrations.find(query)
+        .sort("created_at", 1)
+        .skip(skip)
+        .limit(limit)
+    ):
+        entry["_id"] = str(entry["_id"])
+        entry["formatted_created_at"] = format_timestamp(entry.get("created_at"))
+        registrations.append(entry)
+
+    return jsonify(
+        {
+            "registrations": registrations,
+            "total": total_count,
+            "page": page,
+            "limit": limit,
+            "has_more": skip + len(registrations) < total_count,
+        }
+    )
+
+
 @app.route("/admin", methods=["GET"])
 @admin_required
 def admin_dashboard():
-    registrations = fetch_registrations()
     colleges, courses = get_form_options()
     db_connected = get_db() is not None
-    total_registrations = len(registrations)
+    
+    # Get total count for display
+    db = get_db()
+    total_registrations = db.registrations.count_documents({}) if db is not None else 0
 
     return render_template(
         "admin_dashboard.html",
         hero=hero_story,
-        registrations=registrations,
         colleges=colleges,
         courses=courses,
         db_connected=db_connected,
@@ -479,6 +602,39 @@ def admin_update_options():
     return redirect(url_for("admin_dashboard"))
 
 
+@app.route("/admin/options/reorder", methods=["POST"])
+@admin_required
+def admin_reorder_options():
+    payload = request.get_json(silent=True) or {}
+    option_type = payload.get("option_type")
+    new_order = payload.get("order")
+
+    if option_type not in {"college", "course"} or not isinstance(new_order, list):
+        return jsonify({"success": False, "message": "Invalid payload"}), 400
+
+    colleges, courses = get_form_options()
+
+    def merge_order(original, desired):
+        seen = []
+        for value in desired:
+            if value in original and value not in seen:
+                seen.append(value)
+        for value in original:
+            if value not in seen:
+                seen.append(value)
+        return seen
+
+    if option_type == "college":
+        updated_colleges = merge_order(colleges, new_order)
+        saved = save_form_options(updated_colleges, courses)
+    else:
+        updated_courses = merge_order(courses, new_order)
+        saved = save_form_options(colleges, updated_courses)
+
+    status_code = 200 if saved else 500
+    return jsonify({"success": bool(saved)}), status_code
+
+
 @app.route("/admin/registrations/<reg_id>/delete", methods=["POST"])
 @admin_required
 def admin_delete_registration(reg_id):
@@ -510,7 +666,12 @@ def admin_delete_registration(reg_id):
 @app.route("/admin/export/excel")
 @admin_required
 def export_excel():
-    registrations = fetch_registrations()
+    search_query = request.args.get("search", "").strip()
+    college_filter = request.args.get("college", "").strip()
+    registrations = fetch_registrations(
+        search_query if search_query else None,
+        college_filter if college_filter else None
+    )
     if not registrations:
         flash("No registrations to export.", "warning")
         return redirect(url_for("admin_dashboard"))
@@ -521,8 +682,8 @@ def export_excel():
                 "Name": reg.get("name"),
                 "College": reg.get("college"),
                 "Course": reg.get("course"),
-                "Category": reg.get("category", ""),
-                "Phone": reg.get("phone"),
+                "Role": reg.get("role") or reg.get("category", ""),
+                "Phone": format_phone(reg.get("phone")),
                 "Email": reg.get("email"),
                 "Registered On": format_timestamp(reg.get("created_at")),
             }
@@ -531,13 +692,21 @@ def export_excel():
     )
     buffer = BytesIO()
     report_name = "Laksha Kantha Geetha Parayana Registration Sheet"
-    report_date = datetime.utcnow().strftime("%d-%m-%Y")
+    
+    # Determine start row based on whether there are filters
+    has_filters = bool(college_filter or search_query)
+    if has_filters:
+        start_row = 3  # Title (1), Filter (2), Headers (3)
+    else:
+        start_row = 2  # Title (1), Headers (2)
+    
     with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
         dataframe.to_excel(
-            writer, index=False, sheet_name="Registrations", startrow=2
+            writer, index=False, sheet_name="Registrations", startrow=start_row
         )
         worksheet = writer.sheets["Registrations"]
 
+        # Title row
         worksheet.merge_cells(
             start_row=1,
             start_column=1,
@@ -549,18 +718,26 @@ def export_excel():
         title_cell.font = Font(size=16, bold=True, color="1A237E")
         title_cell.alignment = Alignment(horizontal="center")
 
-        worksheet.merge_cells(
-            start_row=2,
-            start_column=1,
-            end_row=2,
-            end_column=len(dataframe.columns),
-        )
-        date_cell = worksheet.cell(row=2, column=1)
-        date_cell.value = f"Date: {report_date}"
-        date_cell.font = Font(size=12, italic=True, color="555555")
-        date_cell.alignment = Alignment(horizontal="center")
-
-        header_row = 3
+        # Filter row (only if filters exist)
+        if has_filters:
+            worksheet.merge_cells(
+                start_row=2,
+                start_column=1,
+                end_row=2,
+                end_column=len(dataframe.columns),
+            )
+            filter_cell = worksheet.cell(row=2, column=1)
+            filter_parts = []
+            if college_filter:
+                filter_parts.append(f"College: {college_filter}")
+            if search_query:
+                filter_parts.append(f"Search: {search_query}")
+            filter_cell.value = "\n".join(filter_parts)
+            filter_cell.font = Font(size=12, italic=True, color="555555")
+            filter_cell.alignment = Alignment(horizontal="center")
+            header_row = 3
+        else:
+            header_row = 2
         header_fill = PatternFill("solid", fgColor="0B0A08")
         header_font = Font(color="FFFFFF", bold=True)
         thin_border = Border(
@@ -608,48 +785,80 @@ def export_excel():
 @app.route("/admin/export/pdf")
 @admin_required
 def export_pdf():
-    registrations = fetch_registrations()
+    search_query = request.args.get("search", "").strip()
+    college_filter = request.args.get("college", "").strip()
+    registrations = fetch_registrations(
+        search_query if search_query else None,
+        college_filter if college_filter else None
+    )
     if not registrations:
         flash("No registrations to export.", "warning")
         return redirect(url_for("admin_dashboard"))
 
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-    pdf.set_font("Helvetica", "B", 16)
-    pdf.cell(0, 10, "Laksha Kantha Geetha Parayana Registrations", ln=True)
-    pdf.set_font("Helvetica", "", 11)
-    pdf.cell(0, 8, datetime.utcnow().strftime("Date: %d-%m-%Y"), ln=True)
-    pdf.ln(6)
-
-    headers = ["Name", "College", "Course", "Category", "Phone", "Email", "Registered On"]
+    # Set consistent line width for borders (same on all pages)
+    pdf.set_line_width(0.1)
+    
+    headers = ["Name", "College", "Course", "Role", "Phone", "Email", "Registered On"]
     col_widths = [32, 45, 25, 25, 28, 40, 35]
     usable_width = pdf.w - 2 * pdf.l_margin
     width_scale = usable_width / sum(col_widths)
     col_widths = [w * width_scale for w in col_widths]
-
-    pdf.set_font("Helvetica", "B", 11)
-    pdf.set_fill_color(26, 35, 126)
-    pdf.set_text_color(255, 255, 255)
-    for header, width in zip(headers, col_widths):
-        pdf.cell(width, 8, header, border=1, align="C", fill=True)
-    pdf.ln()
-
-    pdf.set_font("Helvetica", size=10)
-    pdf.set_text_color(40, 40, 40)
+    
     line_height = 6
+    header_height = 8
+    header_y = None
+
+    def print_page_header():
+        """Print page header (title, filter info) on every page."""
+        pdf.set_font("Helvetica", "B", 16)
+        pdf.cell(0, 10, "Laksha Kantha Geetha Parayana Registrations", ln=True)
+        pdf.set_font("Helvetica", "", 11)
+        # Filter info on separate line (if exists)
+        if college_filter or search_query:
+            filter_parts = []
+            if college_filter:
+                filter_parts.append(f"College: {college_filter}")
+            if search_query:
+                filter_parts.append(f"Search: {search_query}")
+            pdf.cell(0, 8, "\n".join(filter_parts), ln=True)
+        pdf.ln(6)
+    
+    def print_table_header():
+        """Print table header row on current page."""
+        nonlocal header_y
+        pdf.set_font("Helvetica", "B", 11)
+        pdf.set_fill_color(26, 35, 126)
+        pdf.set_text_color(255, 255, 255)
+        header_y = pdf.get_y()
+        for header, width in zip(headers, col_widths):
+            pdf.cell(width, header_height, header, border=1, align="C", fill=True)
+        pdf.ln()
+        # Reset font and text color for data rows (same as first page)
+        pdf.set_font("Helvetica", size=10)
+        pdf.set_text_color(40, 40, 40)
 
     def split_text(text, width):
-        lines = pdf.multi_cell(width, line_height, text, split_only=True)
+        """Split text to fit within column width."""
+        lines = pdf.multi_cell(width, line_height, str(text), split_only=True)
         return lines or [""]
 
+    # First page
+    pdf.add_page()
+    print_page_header()
+    print_table_header()
+
+    pdf.set_font("Helvetica", size=10)
+
     for index, reg in enumerate(registrations):
+        # Calculate row height first to check if it fits
         row = [
             reg.get("name", ""),
             reg.get("college", ""),
             reg.get("course", ""),
-            reg.get("category", ""),
-            reg.get("phone", ""),
+            reg.get("role") or reg.get("category", ""),
+            format_phone(reg.get("phone", "")),
             reg.get("email", ""),
             format_timestamp(reg.get("created_at")),
         ]
@@ -658,6 +867,22 @@ def export_pdf():
         ]
         max_lines = max(len(lines) for lines in row_lines)
         row_height = max_lines * line_height
+        
+        # Check if we need a new page (leave space for page header and table header)
+        # Page header: 10px (title) + 8px (filter if exists) + 6px (spacing) = ~24px
+        # Table header: 8px
+        # Bottom margin: 15px
+        # Total needed: ~24 + 8 + 15 = 47px minimum, plus row height
+        space_needed = 47 + row_height
+        if pdf.get_y() + space_needed > pdf.h - pdf.b_margin:
+            pdf.add_page()
+            # Reset line width for consistent borders (same as first page)
+            pdf.set_line_width(0.1)
+            print_page_header()
+            print_table_header()
+            # Ensure font is reset for data rows (same style as first page)
+            pdf.set_font("Helvetica", size=10)
+            pdf.set_text_color(40, 40, 40)
 
         if index % 2 == 0:
             pdf.set_fill_color(255, 255, 255)
@@ -672,6 +897,9 @@ def export_pdf():
             x_pos += width
 
         pdf.set_xy(pdf.l_margin, y_start)
+        # Ensure font is set correctly for data (not bold, size 10) - same style on all pages
+        pdf.set_font("Helvetica", size=10)
+        pdf.set_text_color(40, 40, 40)
         for lines, width in zip(row_lines, col_widths):
             x = pdf.get_x()
             y = pdf.get_y()
@@ -701,4 +929,4 @@ def export_pdf():
 
 
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0', port=5001)
+    app.run(debug=True,host='0.0.0.0', port=5002)

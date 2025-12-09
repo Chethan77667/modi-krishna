@@ -16,14 +16,255 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+    <link rel="preload" href="{{ url_for('static', filename='images/home_img/download (1).png') }}" as="image" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css', v=asset_version) }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-styles.css', v=asset_version) }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script defer src="{{ url_for('static', filename='js/app.js', v=asset_version) }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js', v=asset_version) }}"></script>
   </head>
   <body>
     <div class="cosmic-gradient"></div>
+    <audio
+      id="site-background-audio"
+      src="{{ url_for('static', filename='whatsapp-audio-2025-11-21-at-154142-f47aa3b2_ujOApRaO.mp3') }}"
+      loop
+      preload="auto"
+      playsinline
+      autoplay
+    >
+      Your browser does not support the audio element.
+    </audio>
+    <script>
+      // Advanced audio playback with seamless tab switching
+      (function() {
+        const audio = document.getElementById('site-background-audio');
+        if (!audio) return;
+        
+        // Configure audio for best performance
+        audio.volume = 0.5;
+        audio.crossOrigin = 'anonymous';
+        
+        let isPlaying = false;
+        let hasStarted = false;
+        let autoplayAttempts = 0;
+        const MAX_ATTEMPTS = 50;
+        
+        // Aggressive play function that tries multiple strategies
+        const attemptPlay = () => {
+          if (isPlaying) return true;
+          if (autoplayAttempts >= MAX_ATTEMPTS) return false;
+          
+          autoplayAttempts++;
+          
+          // Try to play if audio is ready
+          if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or better
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+              return playPromise
+                .then(() => {
+                  isPlaying = true;
+                  hasStarted = true;
+                  console.log("Audio playing successfully");
+                  return true;
+                })
+                .catch((error) => {
+                  // Autoplay blocked - will retry
+                  return false;
+                });
+            }
+          }
+          return false;
+        };
+        
+        // Continuous attempt function
+        const continuousAttempt = () => {
+          if (!isPlaying && !hasStarted) {
+            attemptPlay();
+          }
+        };
+        
+        // Try to play immediately and continuously
+        attemptPlay();
+        
+        // Schedule multiple immediate attempts
+        const immediateAttempts = [0, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500, 750, 1000];
+        immediateAttempts.forEach(delay => {
+          setTimeout(continuousAttempt, delay);
+        });
+        
+        // Use requestAnimationFrame for very early attempts
+        requestAnimationFrame(() => {
+          continuousAttempt();
+          requestAnimationFrame(() => {
+            continuousAttempt();
+            requestAnimationFrame(continuousAttempt);
+          });
+        });
+        
+        // Listen for all audio ready events
+        ['loadstart', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'playing'].forEach(eventType => {
+          audio.addEventListener(eventType, continuousAttempt, { once: true });
+        });
+        
+        // Try on all page load events
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+          continuousAttempt();
+          setTimeout(continuousAttempt, 50);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+          continuousAttempt();
+          setTimeout(continuousAttempt, 50);
+          setTimeout(continuousAttempt, 100);
+        }, { once: true });
+        
+        window.addEventListener('load', () => {
+          continuousAttempt();
+          setTimeout(continuousAttempt, 50);
+          setTimeout(continuousAttempt, 200);
+        }, { once: true });
+        
+        // Save playback position for seamless navigation between pages
+        const savePosition = () => {
+          try {
+            sessionStorage.setItem('audio_position', audio.currentTime.toString());
+            sessionStorage.setItem('audio_playing', (!audio.paused).toString());
+          } catch(e) {}
+        };
+        
+        // Restore playback position from previous page
+        const restorePosition = () => {
+          try {
+            const savedPosition = sessionStorage.getItem('audio_position');
+            const wasPlaying = sessionStorage.getItem('audio_playing') === 'true';
+            
+            if (savedPosition !== null) {
+              const position = parseFloat(savedPosition);
+              if (audio.readyState >= 1) {
+                audio.currentTime = position;
+              } else {
+                audio.addEventListener('loadeddata', () => {
+                  audio.currentTime = position;
+                }, { once: true });
+              }
+              
+              // Resume if it was playing before
+              if (wasPlaying && hasStarted) {
+                setTimeout(() => {
+                  audio.play().catch(() => {});
+                }, 100);
+              }
+            }
+          } catch(e) {}
+        };
+        
+        // Save position periodically and before page unload
+        setInterval(savePosition, 1000); // Save every second
+        
+        window.addEventListener('beforeunload', () => {
+          savePosition();
+        });
+        
+        // Restore position on load
+        restorePosition();
+        
+        // Page Visibility API - pause/resume smoothly when switching tabs
+        let wasPlayingBeforeHidden = false;
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) {
+            // Tab hidden - pause (don't stop, preserves position)
+            if (!audio.paused) {
+              wasPlayingBeforeHidden = true;
+              audio.pause();
+              }
+            savePosition();
+          } else {
+            // Tab visible - resume from where it was (no restart)
+            if (wasPlayingBeforeHidden || hasStarted) {
+              wasPlayingBeforeHidden = false;
+              // Resume immediately if it was playing
+              audio.play().catch(() => {
+                // If resume fails, try again
+                setTimeout(() => audio.play().catch(() => {}), 100);
+              });
+            } else {
+              // First time load - try to start
+              restorePosition();
+              continuousAttempt();
+            }
+          }
+        });
+        
+        // Capture ANY user interaction to unlock audio (as fallback)
+        const unlockOnInteraction = () => {
+          if (!hasStarted) {
+            attemptPlay();
+            setTimeout(continuousAttempt, 10);
+            setTimeout(continuousAttempt, 50);
+          }
+        };
+        
+        // Listen for any user interaction with capture phase for earliest capture
+        const interactionEvents = ['click', 'touchstart', 'keydown', 'mousedown', 'pointerdown', 'mouseover', 'mousemove', 'scroll', 'wheel'];
+        interactionEvents.forEach(eventType => {
+          document.addEventListener(eventType, unlockOnInteraction, { once: true, passive: true, capture: true });
+          window.addEventListener(eventType, unlockOnInteraction, { once: true, passive: true, capture: true });
+        });
+        
+        // Also add listeners to body when ready
+        if (document.body) {
+          interactionEvents.forEach(eventType => {
+            document.body.addEventListener(eventType, unlockOnInteraction, { once: true, passive: true, capture: true });
+          });
+        } else {
+          const bodyObserver = new MutationObserver(() => {
+            if (document.body) {
+              interactionEvents.forEach(eventType => {
+                document.body.addEventListener(eventType, unlockOnInteraction, { once: true, passive: true, capture: true });
+              });
+              bodyObserver.disconnect();
+            }
+          });
+          bodyObserver.observe(document.documentElement, { childList: true, subtree: true });
+        }
+        
+        // Handle audio errors and retry
+        audio.addEventListener('error', () => {
+          console.log('Audio error, retrying...');
+          setTimeout(continuousAttempt, 500);
+        }, { once: true });
+        
+        // Ensure playback continues smoothly
+        audio.addEventListener('pause', () => {
+          // Only set isPlaying to false if not due to visibility change
+          if (!document.hidden) {
+            isPlaying = false;
+          }
+        });
+        
+        audio.addEventListener('play', () => {
+          isPlaying = true;
+          hasStarted = true;
+        });
+        
+        // Keep trying periodically until it plays (for browsers that eventually allow it)
+        const persistentAttempt = setInterval(() => {
+          if (hasStarted || autoplayAttempts >= MAX_ATTEMPTS) {
+            clearInterval(persistentAttempt);
+            return;
+          }
+          if (document.readyState === 'complete' && !document.hidden) {
+            continuousAttempt();
+        }
+        }, 500);
+        
+        // Clear interval after 10 seconds to avoid infinite attempts
+        setTimeout(() => {
+          clearInterval(persistentAttempt);
+        }, 10000);
+      })();
+    </script>
     
     <!-- Navigation Menu -->
     <div class="college-header">
@@ -37,17 +278,6 @@
                             <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         Home
-                    </a>
-                </div>
-                <div class="nav-link-item">
-                    <a href="{{ url_for('gallery') }}" class="nav-link">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
-                            <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                            <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                            <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                            <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                        Gallery
                     </a>
                 </div>
                 <div class="nav-link-item">
@@ -97,15 +327,6 @@
             </svg>
             <span>Home</span>
         </a>
-        <a href="{{ url_for('gallery') }}" class="bottom-nav-link">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-            </svg>
-            <span>Gallery</span>
-        </a>
         <a href="{{ url_for('register') }}" class="bottom-nav-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 21l-8-4.5V7.5L12 3l8 4.5v9L12 21z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -126,7 +347,9 @@
 
     <footer class="site-footer">
       <p>
-        Designed by III Year BCA 'B' (2025–26 Batch) | Under Guidance of Mr. Pranam Betrabet
+        Designed by III Year BCA 
+        <span class="footer-batch">(2025–26 Batch)</span>
+        <span class="footer-guidance">Under Guidance of Mr. Pranam B</span>
       </p>
       <p>
         © {{ year }} Dr. B. B. Hegde First Grade College, Kundapura — All Rights Reserved

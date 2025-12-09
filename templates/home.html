@@ -1,150 +1,139 @@
 {% extends "base.html" %}
 
 {% block content %}
-<main class="page">
-  <!-- Brihat Geetotsava Banner -->
-  <section class="geetotsava-banner" data-scroll>
-    <div class="geetotsava-content">
-      <div class="geetotsava-title-wrapper">
-        <div class="geetotsava-image-container">
-          <img 
-            src="{{ url_for('static', filename='images/home_img/image.png') }}" 
-            alt="Shri Sugunendra Theertha Swamiji" 
-            class="geetotsava-side-image geetotsava-left-image"
-          />
-          <p class="geetotsava-image-name">Shri Sugunendra Theertha<br>Swamiji</p>
-        </div>
-        <h1 class="geetotsava-title kannada-highlight">ಬೃಹತ್ ಗೀತೋತ್ಸವ</h1>
-        <div class="geetotsava-image-container">
-          <img 
-            src="{{ url_for('static', filename='images/home_img/image copy.png') }}" 
-            alt="Shri Sushreendra Theertha Swamiji" 
-            class="geetotsava-side-image geetotsava-right-image"
-          />
-          <p class="geetotsava-image-name">Shri Sushreendra Theertha<br>Swamiji</p>
-        </div>
-      </div>
-      <p class="geetotsava-date">November 8 - December 7, 2025</p>
-    </div>
-    <div class="geetotsava-image-wrapper mobile-only">
-      <img 
-        src="{{ url_for('static', filename='images/WhatsApp-Image-2021-02-22-at-12.19.59-PM-1009x1200.jpeg') }}" 
-        alt="ಬೃಹತ್ ಗೀತೋತ್ಸವ" 
-        class="geetotsava-image"
-      />
-    </div>
-    <div class="geetotsava-desktop-gallery desktop-only">
-      <div class="geetotsava-desktop-gallery-track">
-        <figure>
-          <img src="{{ url_for('static', filename='images/udupi-krishna-idol.jpg') }}" alt="Udupi Sri Krishna idol close-up" />
-        </figure>
-        <figure>
-          <img src="{{ url_for('static', filename='images/WhatsApp-Image-2021-02-22-at-12.19.59-PM-1009x1200.jpeg') }}" alt="Brihat Geetotsava" />
-        </figure>
-        <figure>
-          <img src="{{ url_for('static', filename='images/home_img/WhatsApp Image 2025-11-19 at 11.44.49_74f8dc8c.jpg') }}" alt="Udupi Krishna temple and Madhwa Sarovara" />
-        </figure>
-        <figure>
-          <img src="{{ url_for('static', filename='images/home_img/69baae818ee7af3c154bb283bf848dc6.jpg') }}" alt="Priest performing aarati" />
-        </figure>
-       
-      </div>
-    </div>
-  </section>
-
-  <section class="hero" data-scroll>
-    <div class="hero-content">
-      <p class="eyebrow">{{ hero.tagline_en }}</p>
-      <h1>
-        <span class="kannada-highlight">{{ hero.title }}</span>
-        <span class="english-subtitle">{{ hero.title_en }}</span>
+<main class="page peace-page">
+  <section class="peace-hero" data-scroll>
+    <div class="peace-hero-copy">
+      <p class="peace-eyebrow">Paryaya Sri Puthige Sri Krishna Matha, Udupi</p>
+      <h1 class="peace-title">
+        <span>Vishwa Shanti Samavesha 2025</span>
+        <small>Global Peace Conclave</small>
       </h1>
-      <p class="hero-lead">
-        <span class="kannada-text">{{ hero.lead }}</span>
-        <span class="english-text">{{ hero.lead_en }}</span>
+      <p class="peace-tagline">“When Hearts Unite, The World Finds Peace”</p>
+      <p class="peace-lead">
+        A sacred day of harmony, human values, and collective responsibility. Revered saints, national leaders,
+        scholars, educators, and young changemakers gather on one platform for dialogue and inspiration.
       </p>
-      <ul class="hero-meta">
-        <li>
-          <span>Date</span>
-          <strong>{{ hero.date }}</strong>
-        </li>
-        <li>
-          <span>Location</span>
-          <strong class="kannada-highlight">{{ hero.location }}</strong>
-          <small class="english-text">{{ hero.location_en }}</small>
-        </li>
-      </ul>
-      <div class="hero-cta">
-        <a class="btn primary" href="#schedule">
-          <span class="kannada-highlight">{{ hero.cta_primary }}</span>
-        </a>
-        <a
-          class="btn external"
-          href="https://krishnamatha.org/"
-          target="_blank"
-          rel="noopener"
-        >
-          Visit krishnamatha.org
-        </a>
+      <div class="peace-cta">
+        <a class="btn primary" href="{{ url_for('register') }}">Register for the conclave</a>
+        <a class="btn external" href="https://krishnamatha.org/" target="_blank" rel="noopener">Know more</a>
       </div>
     </div>
-    <div class="hero-visual">
-      <img
-        src="{{ url_for('static', filename='images/home_img/hero.webp') }}"
-        alt="Devotees at Sri Krishna Math"
-        decoding="async"
-      />
-      <div class="floating-card">
-        <p>Prime Minister Shri Narendra Modi</p>
-        <small>Reciting the concluding Bhagavad Gita verses</small>
+    <div class="peace-hero-card">
+      <div class="peace-card-top">
+        <h3>ಸಂದೇಶ · Samavesha Flow</h3>
+        <p class="peace-muted">
+          Sandesha · Samvaada · Samanvaya — three transformative sessions dedicated to message, collaboration, and unity.
+        </p>
       </div>
+      <div class="peace-card-meta">
+        <div>
+          <p class="peace-eyebrow">Date</p>
+          <strong>December 13, 2025</strong>
+        </div>
+        <div>
+          <p class="peace-eyebrow">Venue</p>
+          <strong>Paryaya Sri Puthige Sri Krishna Matha, Udupi</strong>
+        </div>
+      </div>
+      <p class="peace-quote">“ಭೂಯಾತ್ ವಿಶ್ವಸ್ಯ ಮಂಗಳಂ — May there be welfare for the whole world.”</p>
     </div>
   </section>
 
-  <section class="metrics" data-scroll>
-    {% for item in highlights %}
-    <article class="metric-card">
-      <p class="metric-label">{{ item.label }}</p>
-      <h3>{{ item.value }}</h3>
-      <p class="metric-detail">{{ item.detail }}</p>
-    </article>
-    {% endfor %}
-  </section>
-
-  <section id="schedule" class="schedule" data-scroll>
-    <header>
-      <p class="eyebrow">Program Flow</p>
-      <h2>Gita Utsava Timeline</h2>
-      <p>
-        A month of devotion culminating in the Laksha Kantha Gita Parayana and
-        the Prime Minister’s darshan at Sri Krishna Math.
-      </p>
+  <section class="peace-section" data-scroll>
+    <header class="peace-section-header">
+      <p class="peace-eyebrow">Session 1 — Sandesha</p>
+      <h2>Inauguration & Keynote Lectures</h2>
+      <p class="peace-time">10:00 AM – 01:00 PM</p>
     </header>
-    <div class="timeline">
-      {% for item in schedule %}
-      <article class="timeline-card">
-        <span class="timeline-time">{{ item.time }}</span>
-        <h3>{{ item.title }}</h3>
-        <p>{{ item.description }}</p>
-        <span class="chip">{{ item.category }}</span>
+    <div class="peace-grid">
+      <article class="peace-card">
+        <h3>In the Divine Presence of</h3>
+        <ul>
+          <li>H.H. Sri Sugunendra Teertha Swamiji · Paryaya Sri Puthige Sri Krishna Matha, Udupi</li>
+          <li>Sadguru Sri Madhusudana Sai · Founder, One World–One Family; Founder Chancellor, Sri Sathya Sai University for Human Excellence</li>
+        </ul>
       </article>
-      {% endfor %}
+      <article class="peace-card">
+        <h3>Leadership</h3>
+        <ul>
+          <li>President of the Session: Hon’ble S. Abdul Nazeer, Governor of Andhra Pradesh</li>
+          <li>Distinguished Chief Guest: Dr. William F. Vendley, Secretary General Emeritus, Religions for Peace</li>
+        </ul>
+      </article>
     </div>
   </section>
 
-
-  <section class="storyline" data-scroll>
-    <header>
-      <p class="eyebrow">Why It Matters</p>
-      <h2>Living Heritage of Sri Krishna Math</h2>
+  <section class="peace-section" data-scroll>
+    <header class="peace-section-header">
+      <p class="peace-eyebrow">Session 2 — Samvaada</p>
+      <h2>My Contributions to World Peace — Intercollegiate Interaction</h2>
+      <p class="peace-time">02:00 PM – 03:30 PM</p>
     </header>
-    <div class="story-grid">
-      {% for point in storyline %}
-      <p>{{ point }}</p>
-      {% endfor %}
+    <div class="peace-grid">
+      <article class="peace-card">
+        <h3>Session Coordinator</h3>
+        <p>Dr. Sudhir Raj K · Professor, NITTE University</p>
+        <p class="peace-muted">Selected student orators from colleges and schools share on “What Do I Do for World Peace?”</p>
+      </article>
+      <article class="peace-card">
+        <h3>Key Voices</h3>
+        <ul>
+          <li>Reflections & summarisation by Dr. Sudhir Raj K</li>
+          <li>Keynote address by Sri Rohith Chakrathirtha · Author, Columnist & Educationist</li>
+        </ul>
+      </article>
     </div>
   </section>
 
+  <section class="peace-section" data-scroll>
+    <header class="peace-section-header">
+      <p class="peace-eyebrow">Session 3 — Samanvaya</p>
+      <h2>Global Peace Conclave</h2>
+      <p class="peace-time">03:30 PM – 05:00 PM</p>
+    </header>
+    <div class="peace-grid">
+      <article class="peace-card">
+        <h3>Divine Presence and Blessings</h3>
+        <ul>
+          <li>H.H. Shri Sugunendra Tirtha Swamiji · Paryaya Sri Puthige Sri Krishna Matha, Udupi</li>
+          <li>H.H. Sri Sushreendra Teertha Swamiji · Junior Pontiff, Paryaya Sri Puthige Sri Krishna Matha, Udupi</li>
+        </ul>
+      </article>
+      <article class="peace-card">
+        <h3>Addresses by Revered Guests</h3>
+        <ul>
+          <li>Sri H. D. Kumaraswamy · Hon’ble Union Minister</li>
+          <li>Sri M. Veerappa Moily · Hon’ble Member of Parliament</li>
+          <li>Sri U. T. Khadar · Hon’ble MLA & Chairperson, Karnataka Legislative Assembly</li>
+          <li>Sri Ivan D’Souza · Hon’ble Member of Legislative Council</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="peace-section" data-scroll>
+    <header class="peace-section-header">
+      <p class="peace-eyebrow">Cultural Offering</p>
+      <h2>Alva’s Samskrutika Vaibhav</h2>
+      <p class="peace-time">05:45 PM</p>
+    </header>
+    <article class="peace-card">
+      <p>Variety of cultural performances under one umbrella by more than 500 students · Organised by Alvas Nudisiri Virasat.</p>
+    </article>
+  </section>
+
+  <section class="peace-section" data-scroll>
+    <header class="peace-section-header">
+      <p class="peace-eyebrow">Invitation</p>
+      <h2>You are cordially invited</h2>
+    </header>
+    <article class="peace-card">
+      <p class="peace-lead">
+        Join this sacred and historic gathering that reaffirms India’s eternal message: ಭೂಯಾತ್ ವಿಶ್ವಸ್ಯ ಮಂಗಳಂ · May there be welfare for the whole world.
+      </p>
+    </article>
+  </section>
 </main>
 {% endblock %}
 

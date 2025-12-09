@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<main class="page admin-page">
+<main class="page admin-page peace-admin">
   <section class="admin-hero glass-card" data-scroll>
     <div>
-      <p class="eyebrow">Laksha Kantha Geetha Parayana</p>
-      <h1>Admin Control Room</h1>
+      <p class="peace-eyebrow">Vishwa Shanti Samavesha · Control Room</p>
+      <h1>Global Peace Conclave Admin</h1>
       <p>
-        Monitor registrations, refresh the college/course directory, and export official
-        attendance ledgers. All submissions are written to MongoDB for reliability.
+        Oversee registrations, curate college and course options, and deliver official exports for the organising
+        committee. All submissions are persisted in MongoDB for reliability.
       </p>
     </div>
     <div class="admin-status">
@@ -29,7 +29,7 @@
   </section>
 
   <section class="admin-actions" data-scroll>
-    <article class="glass-card">
+    <article class="glass-card peace-card">
       <header>
         <h2>Exports</h2>
         <p>Download structured reports for sharing with the organising committee.</p>
@@ -40,7 +40,7 @@
       </div>
     </article>
 
-    <article class="glass-card">
+    <article class="glass-card peace-card">
       <header>
         <h2>Quick Stats</h2>
       </header>
@@ -58,15 +58,16 @@
   </section>
 
   <section class="admin-options-grid" data-scroll>
-    <article class="glass-card option-card">
+    <article class="glass-card option-card peace-card">
       <header>
         <h3>College Directory</h3>
         <p>Update the dropdown options shown on the registration form.</p>
       </header>
-      <ul class="option-list">
+      <ul class="option-list" data-type="college">
         {% for college in colleges %}
-        <li>
-          <span>{{ college }}</span>
+        <li data-value="{{ college }}">
+          <span class="drag-handle" aria-hidden="true" title="Drag to reorder">⋮⋮</span>
+          <span class="option-label">{{ college }}</span>
           <form method="post" action="{{ url_for('admin_update_options') }}">
             <input type="hidden" name="option_type" value="college" />
             <input type="hidden" name="action" value="remove" />
@@ -88,15 +89,16 @@
       </form>
     </article>
 
-    <article class="glass-card option-card">
+    <article class="glass-card option-card peace-card">
       <header>
         <h3>Course Directory</h3>
         <p>Keep the course catalog current for cross-campus participation.</p>
       </header>
-      <ul class="option-list">
+      <ul class="option-list" data-type="course">
         {% for course in courses %}
-        <li>
-          <span>{{ course }}</span>
+        <li data-value="{{ course }}">
+          <span class="drag-handle" aria-hidden="true" title="Drag to reorder">⋮⋮</span>
+          <span class="option-label">{{ course }}</span>
           <form method="post" action="{{ url_for('admin_update_options') }}">
             <input type="hidden" name="option_type" value="course" />
             <input type="hidden" name="action" value="remove" />
@@ -124,9 +126,47 @@
       <h2>Latest Registrations</h2>
       <p>The most recent entries are appended to the bottom of the list. Use the exports for the full data set.</p>
     </header>
-    <p class="table-scroll-hint">Swipe or drag horizontally to explore every column</p>
-    <div class="table-wrapper glass-card">
-      {% if registrations %}
+    <div class="table-controls glass-card">
+      <div class="search-filters-row">
+        <div class="search-container">
+          <input
+            type="text"
+            id="registrationSearch"
+            class="search-input"
+            placeholder="Search by name, college, course, role, phone, or email..."
+            autocomplete="off"
+          />
+          <span class="search-icon">🔍</span>
+          <button 
+            type="button" 
+            id="clearSearchBtn" 
+            class="clear-search-btn" 
+            title="Clear search"
+            aria-label="Clear search"
+          >
+            ×
+          </button>
+        </div>
+        <div class="college-filter-container">
+          <select id="collegeFilter" class="college-select">
+            <option value="">All Colleges</option>
+            {% for college in colleges %}
+            <option value="{{ college }}">{{ college }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button id="searchBtn" class="btn primary search-button">Search</button>
+      </div>
+      <div class="table-info">
+        <span id="tableInfo">Loading...</span>
+      </div>
+      <div class="table-export-buttons">
+        <button id="downloadExcelBtn" class="btn external">Download Excel</button>
+        <button id="downloadPdfBtn" class="btn secondary">Download PDF</button>
+      </div>
+    </div>
+    <p class="table-scroll-hint">Swipe or drag horizontally to explore every column. Scroll down to view all entries.</p>
+    <div class="table-wrapper glass-card" id="tableWrapper">
       <table class="admin-table">
         <thead>
           <tr>
@@ -134,50 +174,31 @@
             <th>Name</th>
             <th>College</th>
             <th>Course</th>
-            <th>Category</th>
+            <th>Role</th>
             <th>Phone</th>
             <th>Email</th>
             <th>Registered</th>
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          {% for reg in registrations %}
+        <tbody id="registrationsTableBody">
           <tr>
-            <td data-label="ID">{{ loop.index }}</td>
-            <td data-label="Name">{{ reg.name }}</td>
-            <td data-label="College">{{ reg.college }}</td>
-            <td data-label="Course">{{ reg.course }}</td>
-            <td data-label="Category">{{ reg.category or '—' }}</td>
-            <td data-label="Phone">{{ reg.phone }}</td>
-            <td data-label="Email">{{ reg.email }}</td>
-            <td data-label="Registered">
-              {{ reg.formatted_created_at or '—' }}
-            </td>
-            <td data-label="Actions" class="action-cell">
-              <form
-                method="post"
-                action="{{ url_for('admin_delete_registration', reg_id=reg._id) }}"
-                id="delete-form-{{ reg._id }}"
-                class="delete-form"
-              >
-                <button
-                  type="button"
-                  class="btn danger ghost delete-trigger"
-                  data-target="delete-form-{{ reg._id }}"
-                  data-name="{{ reg.name }}"
-                >
-                  Delete
-                </button>
-              </form>
+            <td colspan="9" class="loading-state">
+              <span>Loading registrations...</span>
             </td>
           </tr>
-          {% endfor %}
         </tbody>
       </table>
-      {% else %}
-      <p class="empty-state">No registrations captured yet. Share the public link to begin onboarding.</p>
-      {% endif %}
+    </div>
+    <div class="pagination-container">
+      <div class="pagination-info">
+        <span id="paginationInfo">Page 1 of 1</span>
+      </div>
+      <div class="pagination-controls">
+        <button id="prevPageBtn" class="btn secondary" disabled>Previous</button>
+        <div class="page-numbers" id="pageNumbers"></div>
+        <button id="nextPageBtn" class="btn secondary" disabled>Next</button>
+      </div>
     </div>
     <div class="admin-delete-modal" id="deleteModal" aria-hidden="true">
       <div class="admin-delete-card">
@@ -191,5 +212,584 @@
     </div>
   </section>
 </main>
-{% endblock %}
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const reorderEndpoint = "{{ url_for('admin_reorder_options') }}";
+    const registrationsEndpoint = "/admin/api/registrations";
+    
+    // Registration table management - Pagination
+    let currentPage = 1;
+    let currentSearch = '';
+    let currentCollege = '';
+    let isLoading = false;
+    let totalCount = 0;
+    let totalPages = 1;
+    const limit = 10;
+    
+    const tableBody = document.getElementById('registrationsTableBody');
+    const searchInput = document.getElementById('registrationSearch');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const collegeFilter = document.getElementById('collegeFilter');
+    const searchBtn = document.getElementById('searchBtn');
+    const tableInfo = document.getElementById('tableInfo');
+    const tableWrapper = document.getElementById('tableWrapper');
+    const downloadExcelBtn = document.getElementById('downloadExcelBtn');
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    const nextPageBtn = document.getElementById('nextPageBtn');
+    const pageNumbers = document.getElementById('pageNumbers');
+    const paginationInfo = document.getElementById('paginationInfo');
+    
+    // Debounce function for search
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+    
+    // Load registrations with pagination
+    async function loadRegistrations(page = 1, search = '', college = '') {
+      if (isLoading) return;
+      isLoading = true;
+      
+      tableBody.innerHTML = '<tr><td colspan="9" class="loading-state"><span>Loading registrations...</span></td></tr>';
+      if (prevPageBtn && nextPageBtn) {
+        prevPageBtn.disabled = true;
+        nextPageBtn.disabled = true;
+      }
+      
+      try {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: limit.toString(),
+        });
+        if (search) {
+          params.append('search', search);
+        }
+        if (college) {
+          params.append('college', college);
+        }
+        
+        const response = await fetch(`${registrationsEndpoint}?${params}`, {
+          method: 'GET',
+          credentials: 'same-origin',
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
+        
+        if (!response.ok) {
+          if (response.status === 401) {
+            window.location.href = '/admin/login';
+            return;
+          }
+          const errorText = await response.text();
+          console.error('API Error:', response.status, errorText);
+          throw new Error(`Failed to load registrations: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        totalCount = data.total;
+        totalPages = Math.ceil(totalCount / limit);
+        currentPage = page;
+        
+        tableBody.innerHTML = '';
+        
+        if (data.registrations.length === 0) {
+          const searchMsg = search ? `No registrations found matching "${search}".` : 'No registrations found.';
+          tableBody.innerHTML = `<tr><td colspan="9" class="empty-state">${searchMsg}</td></tr>`;
+        } else {
+          data.registrations.forEach((reg, index) => {
+            const row = document.createElement('tr');
+            const rowNumber = (page - 1) * limit + index + 1;
+            row.innerHTML = `
+              <td data-label="ID">${rowNumber}</td>
+              <td data-label="Name">${escapeHtml(reg.name || '—')}</td>
+              <td data-label="College">${escapeHtml(reg.college || '—')}</td>
+              <td data-label="Course">${escapeHtml(reg.course || '—')}</td>
+              <td data-label="Role">${escapeHtml(reg.role || reg.category || '—')}</td>
+              <td data-label="Phone">${escapeHtml(formatPhone(reg.phone) || '—')}</td>
+              <td data-label="Email">${escapeHtml(reg.email || '—')}</td>
+              <td data-label="Registered">${escapeHtml(reg.formatted_created_at || '—')}</td>
+              <td data-label="Actions" class="action-cell">
+                <form
+                  method="post"
+                  action="/admin/registrations/${reg._id}/delete"
+                  id="delete-form-${reg._id}"
+                  class="delete-form"
+                >
+                  <button
+                    type="button"
+                    class="btn danger ghost delete-trigger"
+                    data-target="delete-form-${reg._id}"
+                    data-name="${escapeHtml(reg.name)}"
+                  >
+                    Delete
+                  </button>
+                </form>
+              </td>
+            `;
+            tableBody.appendChild(row);
+          });
+          
+          // Add 3 blank rows after the data rows (GUI only, not in exports)
+          for (let i = 0; i < 3; i++) {
+            const blankRow = document.createElement('tr');
+            blankRow.className = 'blank-row';
+            blankRow.innerHTML = `
+              <td data-label="ID">—</td>
+              <td data-label="Name">—</td>
+              <td data-label="College">—</td>
+              <td data-label="Course">—</td>
+              <td data-label="Role">—</td>
+              <td data-label="Phone">—</td>
+              <td data-label="Email">—</td>
+              <td data-label="Registered">—</td>
+              <td data-label="Actions" class="action-cell">—</td>
+            `;
+            tableBody.appendChild(blankRow);
+          }
+        }
+        
+        updateTableInfo();
+        updatePagination();
+      } catch (error) {
+        console.error('Error loading registrations:', error);
+        tableBody.innerHTML = '<tr><td colspan="9" class="empty-state">Error loading registrations. Please refresh the page.</td></tr>';
+        if (prevPageBtn && nextPageBtn) {
+          prevPageBtn.disabled = true;
+          nextPageBtn.disabled = true;
+        }
+      } finally {
+        isLoading = false;
+        if (prevPageBtn && nextPageBtn && totalPages > 0) {
+          prevPageBtn.disabled = currentPage === 1 || isLoading;
+          nextPageBtn.disabled = currentPage === totalPages || isLoading;
+        }
+      }
+    }
+    
+    // Update table info
+    function updateTableInfo() {
+      const start = totalCount === 0 ? 0 : (currentPage - 1) * limit + 1;
+      const end = Math.min(currentPage * limit, totalCount);
+      let filterText = '';
+      if (currentCollege && currentSearch) {
+        filterText = ` (filtered by: "${currentCollege}" and "${currentSearch}")`;
+      } else if (currentCollege) {
+        filterText = ` (filtered by college: "${currentCollege}")`;
+      } else if (currentSearch) {
+        filterText = ` (filtered by: "${currentSearch}")`;
+      }
+      tableInfo.textContent = `Showing ${start} to ${end} of ${totalCount} registrations${filterText}`;
+    }
+    
+    // Update pagination controls
+    function updatePagination() {
+      // Update pagination info
+      paginationInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+      
+      // Update buttons
+      prevPageBtn.disabled = currentPage === 1 || isLoading;
+      nextPageBtn.disabled = currentPage === totalPages || isLoading;
+      
+      // Update page numbers
+      pageNumbers.innerHTML = '';
+      const maxPagesToShow = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+      let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+      
+      if (endPage - startPage < maxPagesToShow - 1) {
+        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+      }
+      
+      if (startPage > 1) {
+        const firstBtn = document.createElement('button');
+        firstBtn.className = 'page-number';
+        firstBtn.textContent = '1';
+        firstBtn.addEventListener('click', () => loadRegistrations(1, currentSearch, currentCollege));
+        pageNumbers.appendChild(firstBtn);
+        
+        if (startPage > 2) {
+          const ellipsis = document.createElement('span');
+          ellipsis.className = 'page-ellipsis';
+          ellipsis.textContent = '...';
+          pageNumbers.appendChild(ellipsis);
+        }
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = `page-number ${i === currentPage ? 'active' : ''}`;
+        pageBtn.textContent = i;
+        pageBtn.addEventListener('click', () => loadRegistrations(i, currentSearch, currentCollege));
+        pageNumbers.appendChild(pageBtn);
+      }
+      
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const ellipsis = document.createElement('span');
+          ellipsis.className = 'page-ellipsis';
+          ellipsis.textContent = '...';
+          pageNumbers.appendChild(ellipsis);
+        }
+        
+        const lastBtn = document.createElement('button');
+        lastBtn.className = 'page-number';
+        lastBtn.textContent = totalPages;
+        lastBtn.addEventListener('click', () => loadRegistrations(totalPages, currentSearch, currentCollege));
+        pageNumbers.appendChild(lastBtn);
+      }
+    }
+    
+    // Download handlers
+    function downloadExcel() {
+      const params = new URLSearchParams();
+      if (currentSearch) params.append('search', currentSearch);
+      if (currentCollege) params.append('college', currentCollege);
+      const paramString = params.toString() ? `?${params.toString()}` : '';
+      window.location.href = `/admin/export/excel${paramString}`;
+    }
+    
+    function downloadPdf() {
+      const params = new URLSearchParams();
+      if (currentSearch) params.append('search', currentSearch);
+      if (currentCollege) params.append('college', currentCollege);
+      const paramString = params.toString() ? `?${params.toString()}` : '';
+      window.location.href = `/admin/export/pdf${paramString}`;
+    }
+    
+    
+    // Escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Format phone
+    function formatPhone(phone) {
+      if (!phone) return '';
+      const digits = phone.replace(/\D/g, '');
+      if (digits.length === 12 && digits.startsWith('91')) {
+        return digits.substring(2);
+      }
+      return digits;
+    }
+    
+    // Perform search function
+    function performSearch() {
+      currentSearch = searchInput.value.trim();
+      currentCollege = collegeFilter.value;
+      
+      // Show/hide clear button
+      if (currentSearch || currentCollege) {
+        clearSearchBtn.style.display = 'flex';
+      } else {
+        clearSearchBtn.style.display = 'none';
+      }
+      
+      // Load search results - this will display filtered data in the GUI
+      loadRegistrations(1, currentSearch, currentCollege);
+      // Scroll to top of table
+      setTimeout(() => {
+        document.querySelector('.admin-table-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+    
+    // Search button handler
+    searchBtn.addEventListener('click', performSearch);
+    
+    // Search on Enter key
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+    
+    // College filter change handler
+    collegeFilter.addEventListener('change', () => {
+      performSearch();
+    });
+    
+    // Clear search button handler
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      collegeFilter.value = '';
+      currentSearch = '';
+      currentCollege = '';
+      clearSearchBtn.style.display = 'none';
+      loadRegistrations(1, '', '');
+      setTimeout(() => {
+        document.querySelector('.admin-table-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    });
+    
+    // Pagination handlers
+    prevPageBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (currentPage > 1 && !isLoading) {
+        loadRegistrations(currentPage - 1, currentSearch, currentCollege);
+        // Scroll to top of table
+        setTimeout(() => {
+          document.querySelector('.admin-table-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    });
+    
+    nextPageBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (currentPage < totalPages && !isLoading) {
+        loadRegistrations(currentPage + 1, currentSearch, currentCollege);
+        // Scroll to top of table
+        setTimeout(() => {
+          document.querySelector('.admin-table-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    });
+    
+    // Download button handlers
+    downloadExcelBtn.addEventListener('click', downloadExcel);
+    downloadPdfBtn.addEventListener('click', downloadPdf);
+    
+    // Initial load
+    loadRegistrations(1, '', '');
+    
+    // Smooth click-and-drag scrolling for table (horizontal only)
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    
+    tableWrapper.addEventListener('mousedown', (e) => {
+      // Don't interfere with buttons, links, or form elements
+      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('form')) {
+        return;
+      }
+      // Only enable drag for horizontal scrolling on table cells
+      if (e.target.closest('table')) {
+        isDown = true;
+        tableWrapper.style.cursor = 'grabbing';
+        startX = e.pageX - tableWrapper.offsetLeft;
+        scrollLeft = tableWrapper.scrollLeft;
+        e.preventDefault();
+      }
+    });
+    
+    tableWrapper.addEventListener('mouseleave', () => {
+      isDown = false;
+      tableWrapper.style.cursor = 'grab';
+    });
+    
+    tableWrapper.addEventListener('mouseup', () => {
+      isDown = false;
+      tableWrapper.style.cursor = 'grab';
+    });
+    
+    tableWrapper.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - tableWrapper.offsetLeft;
+      const walk = (x - startX) * 2; // Scroll speed multiplier
+      tableWrapper.scrollLeft = scrollLeft - walk;
+    });
+    
+    // Set initial cursor
+    tableWrapper.style.cursor = 'grab';
+    
+    // Delete modal handlers using event delegation
+    let currentDeleteFormId = null;
+    const modal = document.getElementById('deleteModal');
+    const modalText = document.getElementById('deleteModalText');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    const cancelBtn = document.querySelector('[data-modal-cancel]');
+    
+    // Ensure elements exist
+    if (!modal || !modalText || !confirmBtn || !cancelBtn) {
+      console.error('Delete modal elements not found:', { modal: !!modal, modalText: !!modalText, confirmBtn: !!confirmBtn, cancelBtn: !!cancelBtn });
+    }
+    
+    // Event delegation for delete buttons - use tableBody to catch dynamically added buttons
+    tableBody.addEventListener('click', (e) => {
+      const deleteBtn = e.target.closest('.delete-trigger');
+      if (!deleteBtn) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const formId = deleteBtn.dataset.target;
+      const name = deleteBtn.dataset.name;
+      
+      if (!formId || !name) {
+        console.error('Delete button missing data attributes:', { formId, name });
+        return;
+      }
+      
+      if (!modal || !modalText) {
+        console.error('Modal elements not available');
+        return;
+      }
+      
+      currentDeleteFormId = formId;
+      modalText.textContent = `Are you sure you want to delete the registration for "${name}"? This action cannot be undone.`;
+      modal.setAttribute('aria-hidden', 'false');
+      modal.classList.add('is-open');
+    });
+    
+    // Confirm delete
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentDeleteFormId) {
+          const form = document.getElementById(currentDeleteFormId);
+          if (form) {
+            // Close modal first
+            if (modal) {
+              modal.setAttribute('aria-hidden', 'true');
+              modal.classList.remove('is-open');
+            }
+            // Submit form
+            form.submit();
+          } else {
+            console.error('Delete form not found:', currentDeleteFormId);
+            if (modal) {
+              modal.setAttribute('aria-hidden', 'true');
+              modal.classList.remove('is-open');
+            }
+          }
+          currentDeleteFormId = null;
+        }
+      });
+    }
+    
+    // Cancel delete
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (modal) {
+          modal.setAttribute('aria-hidden', 'true');
+          modal.classList.remove('is-open');
+        }
+        currentDeleteFormId = null;
+      });
+    }
+    
+    // Close modal when clicking outside
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.setAttribute('aria-hidden', 'true');
+          modal.classList.remove('is-open');
+          currentDeleteFormId = null;
+        }
+      });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) {
+        modal.setAttribute('aria-hidden', 'true');
+        modal.classList.remove('is-open');
+        currentDeleteFormId = null;
+      }
+    });
 
+    document.querySelectorAll('.option-list[data-type]').forEach((list) => {
+      list.querySelectorAll('li').forEach((item) => {
+        item.setAttribute('draggable', 'true');
+      });
+
+      const handleDragStart = (event) => {
+        const item = event.target.closest('li');
+        if (!item || event.target.closest('button')) {
+          event.preventDefault();
+          return;
+        }
+        event.dataTransfer.effectAllowed = 'move';
+        try {
+          event.dataTransfer.setData('text/plain', '');
+        } catch (err) {}
+        item.classList.add('dragging');
+      };
+
+      const handleDragOver = (event) => {
+        event.preventDefault();
+        const dragging = list.querySelector('.dragging');
+        if (!dragging) return;
+        const afterElement = getDragAfterElement(list, event.clientY);
+        if (afterElement == null) {
+          list.appendChild(dragging);
+        } else {
+          list.insertBefore(dragging, afterElement);
+        }
+      };
+
+      const handleDrop = (event) => {
+        event.preventDefault();
+        const dragging = list.querySelector('.dragging');
+        if (dragging) {
+          dragging.classList.remove('dragging');
+          persistOrder(list);
+        }
+      };
+
+      const handleDragEnd = () => {
+        const dragging = list.querySelector('.dragging');
+        dragging?.classList.remove('dragging');
+      };
+
+      list.addEventListener('dragstart', handleDragStart);
+      list.addEventListener('dragover', handleDragOver);
+      list.addEventListener('drop', handleDrop);
+      list.addEventListener('dragend', handleDragEnd);
+      list.addEventListener('dragenter', (event) => event.preventDefault());
+    });
+
+    function getDragAfterElement(list, y) {
+      const items = [...list.querySelectorAll('li:not(.dragging)')];
+      return items.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element || null;
+    }
+
+    function persistOrder(list) {
+      const optionType = list.dataset.type;
+      const order = Array.from(list.querySelectorAll('li')).map((item) => item.dataset.value);
+      fetch(reorderEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ option_type: optionType, order }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.success) {
+            throw new Error();
+          }
+        })
+        .catch(() => {
+          alert('Unable to save the new order. Please try again.');
+          window.location.reload();
+        });
+    }
+  });
+</script>
+{% endblock %}
